@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Student Life OS</title>
+  <style>
+    :root{
+      --bg1:#f6f8ff; --bg2:#ffffff;
+      --card:#ffffff; --card2:#f5f7ff;
+      --text:#0e1633; --muted:#55608a;
+      --line:#dbe2ff;
+      --accent:#3b82f6;
+      --accent2:#7c3aed;
+      --good:#16a34a; --warn:#d97706; --bad:#e11d48;
+      --shadow: 0 12px 40px rgba(16,24,40,.08);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background: radial-gradient(1200px 700px at 20% 0%, #eef3ff 0%, transparent 60%),
+                  radial-gradient(1200px 700px at 80% 20%, #f2eaff 0%, transparent 55%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      background: rgba(246,248,255,.8);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    h1{font-size:18px;margin:0}
+    .sub{color:var(--muted);font-size:12px;margin-top:4px}
+    .grid{display:grid;grid-template-columns: 1fr;gap:12px;margin-top:12px}
+    @media(min-width:980px){.grid{grid-template-columns: 1.05fr .95fr}}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow:var(--shadow);
+    }
+    .card.soft{background:linear-gradient(180deg,var(--card),var(--card2))}
+    input,select,textarea,button{
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      padding:10px;
+      font-size:14px;
+      outline:none;
+    }
+    input:focus,select:focus,textarea:focus{border-color:#b9c7ff; box-shadow:0 0 0 4px rgba(59,130,246,.10)}
+    textarea{min-height:84px;resize:vertical;width:100%}
+    button{cursor:pointer}
+    button.primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      border:none;color:#fff;font-weight:800;
+    }
+    button.ghost{background:transparent}
+    button.danger{background:transparent;border:1px solid #ffd2de;color:var(--bad)}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tab{
+      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
+      background:#fff;color:var(--muted);
+    }
+    .tab.active{background:rgba(59,130,246,.10); color:var(--text); border-color:rgba(59,130,246,.35)}
+    .kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media(min-width:800px){.kpi{grid-template-columns:repeat(5,1fr)}}
+    .kpiBox{padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff}
+    .kpiNum{font-weight:900;font-size:20px}
+    .small{font-size:12px;color:var(--muted)}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+    .split{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:760px){.split{grid-template-columns:1fr 1fr}}
+    .list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+    .item{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px;
+      background:linear-gradient(180deg,#fff,#fbfcff);
+    }
+    .itemTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .title{font-weight:900}
+    .meta{color:var(--muted);font-size:12px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      border:1px solid var(--line);color:var(--muted);
+      padding:4px 8px;border-radius:999px;font-size:12px;background:#fff;
+    }
+    .pill.good{border-color:rgba(22,163,74,.30);color:var(--good)}
+    .pill.warn{border-color:rgba(217,119,6,.30);color:var(--warn)}
+    .pill.bad{border-color:rgba(225,29,72,.30);color:var(--bad)}
+    .rightBtns{display:flex;flex-direction:column;gap:8px}
+    .calendar{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      overflow:hidden;
+      background:#fff;
+    }
+    .calHead{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px;border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,#fff,#f6f8ff);
+    }
+    .calGrid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      min-height: 260px;
+    }
+    .day{
+      border-right:1px solid var(--line);
+      border-top:1px solid var(--line);
+      padding:10px;
+      min-height: 190px;
+      background:#fff;
+    }
+    .day:last-child{border-right:none}
+    .dayHdr{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:8px;
+      color:var(--muted);font-size:12px;
+    }
+    .chip{
+      display:block;
+      border:1px solid var(--line);
+      border-left:4px solid rgba(59,130,246,.65);
+      border-radius:10px;
+      padding:6px 8px;
+      margin:6px 0;
+      background:#fff;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .chip .c1{font-weight:800; color:var(--text)}
+    .chip .c2{color:var(--muted); margin-top:2px}
+    .chip.job{border-left-color: rgba(124,58,237,.65)}
+    .chip.social{border-left-color: rgba(236,72,153,.65)}
+    .chip.meeting{border-left-color: rgba(245,158,11,.65)}
+    .chip.networking{border-left-color: rgba(16,185,129,.65)}
+    .chip.assignment{border-left-color: rgba(59,130,246,.65)}
+    .chip.class{border-left-color: rgba(14,116,144,.65)}
+    .chip.gcal{border-left-color: rgba(239,68,68,.65)}
+    .tagRow{display:flex; gap:8px; flex-wrap:wrap}
+    .notice{padding:10px;border:1px dashed #c7d2fe;border-radius:14px;background:#f8faff;color:var(--muted);font-size:12px}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <h1>Student Life OS</h1>
+        <div class="sub">Assignments • Networking • Job Apps • Meetings • Social • Week calendar • Recurring tasks • Reminders</div>
+      </div>
+      <div class="row">
+        <button class="ghost" id="notifBtn">Enable reminders</button>
+        <button class="ghost" id="gcalBtn">Connect Google Calendar</button>
+        <button class="ghost" id="exportBtn">Export</button>
+        <button class="ghost" id="importBtn">Import</button>
+        <button class="danger" id="resetBtn">Reset</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <input id="search" placeholder="Search everything (title, notes, company, people…)" style="flex:1;min-width:240px"/>
+      <select id="filterType">
+        <option value="all">All categories</option>
+        <option value="assignment">Assignments</option>
+        <option value="class">Classes</option>
+        <option value="networking">Networking</option>
+        <option value="job">Job Apps</option>
+        <option value="meeting">Meetings</option>
+        <option value="social">Social</option>
+      </select>
+      <select id="filterStatus">
+        <option value="all">All statuses</option>
+        <option value="todo">To do</option>
+        <option value="in_progress">In progress</option>
+        <option value="waiting">Waiting</option>
+        <option value="done">Done</option>
+        <option value="canceled">Canceled</option>
+      </select>
+      <select id="sortBy">
+        <option value="dueAsc">Sort: due soon</option>
+        <option value="dueDesc">Sort: due last</option>
+        <option value="createdDesc">Sort: newest</option>
+        <option value="createdAsc">Sort: oldest</option>
+        <option value="priorityDesc">Sort: priority</option>
+      </select>
+      <select id="viewMode">
+        <option value="list">View: list</option>
+        <option value="week">View: week</option>
+        <option value="both">View: both</option>
+      </select>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="kpi" id="kpis"></div>
+
+  <div class="grid">
+    <section class="card soft">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="title">Add / edit item</div>
+          <div class="small">Recurring tasks generate occurrences in the week view. Reminders fire while this page is open.</div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <form id="form">
+        <div class="split">
+          <div>
+            <label class="small">Category</label><br/>
+            <select id="type" style="width:100%">
+              <option value="assignment">Assignment</option>
+              <option value="class">Class</option>
+              <option value="networking">Networking</option>
+              <option value="job">Job Application</option>
+              <option value="meeting">Meeting / Planning</option>
+              <option value="social">Social</option>
+            </select>
+          </div>
+          <div>
+            <label class="small">Status</label><br/>
+            <select id="status" style="width:100%">
+              <option value="todo">To do</option>
+              <option value="in_progress">In progress</option>
+              <option value="waiting">Waiting</option>
+              <option value="done">Done</option>
+              <option value="canceled">Canceled</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label class="small">Title</label><br/>
+          <input id="title" required placeholder="e.g., Econ pset #3 / Coffee chat / Apply to internship" style="width:100%"/>
+        </div>
+
+        <div class="split" style="margin-top:10px">
+          <div>
+            <label class="small">Date</label><br/>
+            <input id="dueDate" type="date" style="width:100%"/>
+          </div>
+          <div>
+            <label class="small">Time</label><br/>
+            <input id="dueTime" type="time" style="width:100%"/>
+          </div>
+        </div>
+
+        <div class="split" style="margin-top:10px">
+          <div>
+            <label class="small">People / Company (optional)</label><br/>
+            <input id="who" placeholder="e.g., Maya (Goldman) / Professor Kim" style="width:100%"/>
+          </div>
+          <div>
+            <label class="small">Priority</label><br/>
+            <select id="priority" style="width:100%">
+              <option value="3">High</option>
+              <option value="2" selected>Medium</option>
+              <option value="1">Low</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="split" style="margin-top:10px">
+          <div>
+            <label class="small">Recurring</label><br/>
+            <select id="recurrence" style="width:100%">
+              <option value="none" selected>None</option>
+              <option value="daily">Daily</option>
+              <option value="weekdays">Weekdays (Mon–Fri)</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Every 2 weeks</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div>
+            <label class="small">Reminder</label><br/>
+            <select id="remindMins" style="width:100%">
+              <option value="0" selected>No reminder</option>
+              <option value="5">5 min before</option>
+              <option value="15">15 min before</option>
+              <option value="60">1 hour before</option>
+              <option value="1440">1 day before</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label class="small">Notes</label><br/>
+          <textarea id="notes" placeholder="Links, next steps, what to say, meeting agenda, etc."></textarea>
+        </div>
+
+        <div class="row" style="margin-top:10px;justify-content:space-between">
+          <div class="small" id="formHint">Tip: put links in Notes. Search finds them later.</div>
+          <button class="primary" type="submit" id="submitBtn">Add</button>
+        </div>
+      </form>
+
+      <div class="hr"></div>
+      <div class="notice">
+        <div><b>Sharing with others:</b> host this file as a website (GitHub Pages / Vercel). Data is stored per-user in their browser unless you add a backend.</div>
+        <div style="margin-top:6px"><b>Google Calendar:</b> optional. You can connect after you create a Google OAuth Client ID and paste it into settings (instructions below).</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="title">Your items</div>
+          <div class="small">Click an item to edit. ✓ toggles done. Week view shows this week + recurring occurrences.</div>
+        </div>
+        <div class="tagRow">
+          <button class="ghost" id="settingsBtn">Settings</button>
+        </div>
+      </div>
+
+      <div id="settingsPanel" class="notice" style="display:none; margin-top:10px">
+        <div style="font-weight:800">Settings</div>
+        <div class="small" style="margin-top:6px">
+          Optional Google OAuth Client ID (for Calendar). Create in Google Cloud Console → OAuth 2.0 Client (Web).
+          Add your site URL to Authorized JavaScript origins and Authorized redirect URIs.
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input id="gcalClientId" placeholder="Google OAuth Client ID (ends with .apps.googleusercontent.com)" style="flex:1; min-width:260px"/>
+          <button class="ghost" id="saveSettingsBtn">Save</button>
+        </div>
+        <div class="small" style="margin-top:6px">
+          Current origin: <span class="mono" id="originLabel"></span>
+        </div>
+      </div>
+
+      <div id="weekWrap" style="display:none; margin-top:10px"></div>
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+  // ========= Storage =========
+  const STORAGE_KEY = "student_life_os_v2";
+  const DEFAULT_STATE = {
+    items: [],
+    activeTab: "all",
+    settings: { gcalClientId: "" },
+    gcal: { accessToken: "", expiresAt: 0, events: [] },
+    // track completion of recurring occurrences by "itemId|YYYY-MM-DD"
+    occurrenceStatus: {}
+  };
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return structuredClone(DEFAULT_STATE);
+      const s = JSON.parse(raw);
+      return { ...structuredClone(DEFAULT_STATE), ...s, settings:{...DEFAULT_STATE.settings, ...(s.settings||{})},
+               gcal:{...DEFAULT_STATE.gcal, ...(s.gcal||{})}, occurrenceStatus: s.occurrenceStatus || {} };
+    } catch {
+      return structuredClone(DEFAULT_STATE);
+    }
+  }
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  let state = load();
+
+  // ========= Constants =========
+  const TYPES = [
+    {key:"all", label:"All"},
+    {key:"assignment", label:"Assignments"},
+    {key:"class", label:"Classes"},
+    {key:"networking", label:"Networking"},
+    {key:"job", label:"Job Apps"},
+    {key:"meeting", label:"Meetings"},
+    {key:"social", label:"Social"},
+  ];
+  const STATUS_LABELS = { todo:"To do", in_progress:"In progress", waiting:"Waiting", done:"Done", canceled:"Canceled" };
+
+  // ========= Helpers =========
+  function uid(){ return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16); }
+  const pad = (n)=>String(n).padStart(2,"0");
+  function ymd(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+  function startOfWeek(d){ // Monday
+    const x = new Date(d);
+    const day = (x.getDay()+6)%7; // Mon=0
+    x.setHours(0,0,0,0);
+    x.setDate(x.getDate()-day);
+    return x;
+  }
+  function addDays(d, n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+  function toISO(dateStr, timeStr){
+    if (!dateStr) return "";
+    const t = timeStr || "23:59";
+    const local = new Date(dateStr + "T" + t);
+    return local.toISOString();
+  }
+  function fromISO(iso){
+    if(!iso) return {dueDate:"", dueTime:""};
+    const d=new Date(iso);
+    return { dueDate: `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,
+             dueTime: `${pad(d.getHours())}:${pad(d.getMinutes())}` };
+  }
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+  function prettyDue(iso){
+    if(!iso) return "No date";
+    const d=new Date(iso);
+    return d.toLocaleString([], {weekday:"short", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"});
+  }
+  function statusPillClass(status, dueISO){
+    if (status==="done") return "pill good";
+    if (status==="canceled") return "pill";
+    if (!dueISO) return "pill";
+    const due=new Date(dueISO).getTime(), now=Date.now();
+    const diffHrs=(due-now)/36e5;
+    if (diffHrs<0) return "pill bad";
+    if (diffHrs<48) return "pill warn";
+    return "pill";
+  }
+  function typeLabel(type){ return (TYPES.find(t=>t.key===type)?.label || type); }
+
+  // ========= Recurrence =========
+  function occursOn(item, dateObj){
+    // For non-recurring: occurs on its dueDate only
+    const rec = item.recurrence || "none";
+    const baseDate = item.dueISO ? new Date(item.dueISO) : null;
+    if (!baseDate) return false;
+    const targetYMD = ymd(dateObj);
+    const baseYMD = ymd(baseDate);
+
+    if (rec==="none") return targetYMD === baseYMD;
+
+    // Use base date as anchor
+    const daysDiff = Math.floor((new Date(targetYMD) - new Date(baseYMD)) / 86400000);
+    if (daysDiff < 0) return false;
+
+    if (rec==="daily") return true;
+    if (rec==="weekdays"){
+      const dow = dateObj.getDay(); // 0 Sun .. 6 Sat
+      return dow>=1 && dow<=5;
+    }
+    if (rec==="weekly") return (daysDiff % 7) === 0;
+    if (rec==="biweekly") return (daysDiff % 14) === 0;
+    if (rec==="monthly"){
+      // same day-of-month; if base is 31 and month has fewer days, skip
+      return dateObj.getDate() === baseDate.getDate();
+    }
+    return false;
+  }
+
+  function occurrenceKey(itemId, dateObj){ return `${itemId}|${ymd(dateObj)}`; }
+  function getOccurrenceStatus(item, dateObj){
+    const k = occurrenceKey(item.id, dateObj);
+    return state.occurrenceStatus[k] || "todo";
+  }
+  function setOccurrenceStatus(item, dateObj, status){
+    const k = occurrenceKey(item.id, dateObj);
+    state.occurrenceStatus[k] = status;
+    save();
+  }
+
+  // ========= DOM =========
+  const tabsEl = document.getElementById("tabs");
+  const kpisEl = document.getElementById("kpis");
+  const listEl = document.getElementById("list");
+  const weekWrap = document.getElementById("weekWrap");
+
+  const searchEl = document.getElementById("search");
+  const filterTypeEl = document.getElementById("filterType");
+  const filterStatusEl = document.getElementById("filterStatus");
+  const sortByEl = document.getElementById("sortBy");
+  const viewModeEl = document.getElementById("viewMode");
+
+  const formEl = document.getElementById("form");
+  const typeEl = document.getElementById("type");
+  const statusEl = document.getElementById("status");
+  const titleEl = document.getElementById("title");
+  const dueDateEl = document.getElementById("dueDate");
+  const dueTimeEl = document.getElementById("dueTime");
+  const whoEl = document.getElementById("who");
+  const priorityEl = document.getElementById("priority");
+  const notesEl = document.getElementById("notes");
+  const recurrenceEl = document.getElementById("recurrence");
+  const remindMinsEl = document.getElementById("remindMins");
+  const submitBtn = document.getElementById("submitBtn");
+
+  const exportBtn = document.getElementById("exportBtn");
+  const importBtn = document.getElementById("importBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const notifBtn = document.getElementById("notifBtn");
+  const gcalBtn = document.getElementById("gcalBtn");
+
+  const settingsBtn = document.getElementById("settingsBtn");
+  const settingsPanel = document.getElementById("settingsPanel");
+  const gcalClientIdEl = document.getElementById("gcalClientId");
+  const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+  const originLabel = document.getElementById("originLabel");
+  originLabel.textContent = location.origin;
+
+  // ========= Rendering =========
+  function renderTabs(){
+    tabsEl.innerHTML="";
+    TYPES.forEach(t=>{
+      const b=document.createElement("button");
+      b.className="tab"+(state.activeTab===t.key?" active":"");
+      b.textContent=t.label;
+      b.onclick=()=>{ state.activeTab=t.key; save(); render(); };
+      tabsEl.appendChild(b);
+    });
+  }
+
+  function computeKPIs(){
+    const open = state.items.filter(x=>!["done","canceled"].includes(x.status)).length;
+    const overdue = state.items.filter(x=>{
+      if (["done","canceled"].includes(x.status)) return false;
+      if (!x.dueISO) return false;
+      return new Date(x.dueISO).getTime() < Date.now();
+    }).length;
+    const dueSoon = state.items.filter(x=>{
+      if (["done","canceled"].includes(x.status)) return false;
+      if (!x.dueISO) return false;
+      const diffHrs = (new Date(x.dueISO).getTime() - Date.now())/36e5;
+      return diffHrs>=0 && diffHrs<=48;
+    }).length;
+    const networkingNext = state.items.filter(x=>x.type==="networking" && !["done","canceled"].includes(x.status)).length;
+
+    // week count (occurrences)
+    const wk = startOfWeek(new Date());
+    let weekOcc = 0;
+    for (let i=0;i<7;i++){
+      const d = addDays(wk,i);
+      weekOcc += state.items.filter(it=>it.dueISO && occursOn(it,d) && !["canceled"].includes(it.status)).length;
+    }
+
+    return { open, dueSoon, overdue, networkingNext, weekOcc };
+  }
+
+  function renderKPIs(){
+    const k=computeKPIs();
+    kpisEl.innerHTML=`
+      <div class="kpiBox"><div class="small">Open items</div><div class="kpiNum">${k.open}</div></div>
+      <div class="kpiBox"><div class="small">Due in 48h</div><div class="kpiNum">${k.dueSoon}</div></div>
+      <div class="kpiBox"><div class="small">Overdue</div><div class="kpiNum">${k.overdue}</div></div>
+      <div class="kpiBox"><div class="small">Networking to do</div><div class="kpiNum">${k.networkingNext}</div></div>
+      <div class="kpiBox"><div class="small">This week (occurrences)</div><div class="kpiNum">${k.weekOcc}</div></div>
+    `;
+  }
+
+  function matchesFilters(item){
+    const q=(searchEl.value||"").trim().toLowerCase();
+    const typeFilter=filterTypeEl.value;
+    const statusFilter=filterStatusEl.value;
+    const tab=state.activeTab;
+
+    if (tab!=="all" && item.type!==tab) return false;
+    if (typeFilter!=="all" && item.type!==typeFilter) return false;
+    if (statusFilter!=="all" && item.status!==statusFilter) return false;
+
+    if (q){
+      const blob=`${item.title} ${item.who||""} ${item.notes||""}`.toLowerCase();
+      if (!blob.includes(q)) return false;
+    }
+    return true;
+  }
+
+  function sortItems(items){
+    const s=sortByEl.value;
+    const pr=(x)=>parseInt(x.priority||"2",10);
+    const due=(x)=>x.dueISO ? new Date(x.dueISO).getTime() : Infinity;
+
+    if (s==="createdAsc") items.sort((a,b)=>a.createdAt-b.createdAt);
+    if (s==="createdDesc") items.sort((a,b)=>b.createdAt-a.createdAt);
+    if (s==="dueAsc") items.sort((a,b)=>due(a)-due(b));
+    if (s==="dueDesc") items.sort((a,b)=>due(b)-due(a));
+    if (s==="priorityDesc") items.sort((a,b)=>pr(b)-pr(a));
+
+    // tie-breakers
+    items.sort((a,b)=> (pr(b)-pr(a)) || (due(a)-due(b)) || (b.createdAt-a.createdAt));
+    return items;
+  }
+
+  function renderList(){
+    const items = sortItems(state.items.filter(matchesFilters));
+    listEl.innerHTML="";
+
+    if (!items.length){
+      const empty=document.createElement("div");
+      empty.className="small";
+      empty.textContent="No items (or filters hid them). Add one on the left.";
+      listEl.appendChild(empty);
+      return;
+    }
+
+    items.forEach(item=>{
+      const el=document.createElement("div");
+      el.className="item";
+      const pillClass=statusPillClass(item.status,item.dueISO);
+
+      el.innerHTML=`
+        <div class="itemTop">
+          <div>
+            <div class="title">${escapeHtml(item.title)}</div>
+            <div class="meta">
+              <span class="pill">${escapeHtml(typeLabel(item.type))}</span>
+              <span class="${pillClass}">${escapeHtml(STATUS_LABELS[item.status]||item.status)}</span>
+              ${item.who ? `<span class="pill">👤 ${escapeHtml(item.who)}</span>` : ""}
+              <span class="pill">⏰ ${escapeHtml(prettyDue(item.dueISO))}</span>
+              <span class="pill">⭐ ${item.priority==="3"?"High":item.priority==="1"?"Low":"Medium"}</span>
+              ${item.recurrence && item.recurrence!=="none" ? `<span class="pill">🔁 ${escapeHtml(item.recurrence)}</span>` : ""}
+              ${item.remindMins && item.remindMins!=="0" ? `<span class="pill">🔔 ${escapeHtml(item.remindMins)}m</span>` : ""}
+            </div>
+          </div>
+          <div class="rightBtns">
+            <button class="ghost" title="Toggle done">✓</button>
+            <button class="danger" title="Delete">✕</button>
+          </div>
+        </div>
+        ${item.notes ? `<div class="small" style="margin-top:8px;white-space:pre-wrap">${escapeHtml(item.notes)}</div>` : ""}
+      `;
+
+      const [toggleBtn, deleteBtn] = el.querySelectorAll("button");
+      toggleBtn.onclick=(e)=>{
+        e.stopPropagation();
+        item.status = (item.status==="done") ? "todo" : "done";
+        save(); render();
+      };
+      deleteBtn.onclick=(e)=>{
+        e.stopPropagation();
+        state.items = state.items.filter(x=>x.id!==item.id);
+        save(); render();
+      };
+      el.onclick=()=>openEdit(item.id);
+
+      listEl.appendChild(el);
+    });
+  }
+
+  function renderWeek(){
+    const mode=viewModeEl.value;
+    if (mode==="list"){ weekWrap.style.display="none"; return; }
+    weekWrap.style.display="block";
+
+    const wkStart = startOfWeek(new Date());
+    const days = Array.from({length:7}, (_,i)=>addDays(wkStart,i));
+    const dayNames = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+    // collect occurrences (items) + google events (if any)
+    const occByDay = new Map();
+    days.forEach(d=>occByDay.set(ymd(d), []));
+
+    // items as occurrences
+    state.items.forEach(item=>{
+      if (!item.dueISO) return;
+      days.forEach(d=>{
+        if (!occursOn(item,d)) return;
+        // Skip canceled items
+        if (item.status==="canceled") return;
+
+        // occurrence status overrides for recurring items
+        const occStatus = (item.recurrence && item.recurrence!=="none")
+          ? getOccurrenceStatus(item,d)
+          : item.status;
+
+        // apply filters to base item (type/status) using effective status when recurring
+        const shadow = { ...item, status: occStatus };
+        if (!matchesFilters(shadow)) return;
+
+        occByDay.get(ymd(d)).push({ kind:"item", item, date:d, status: occStatus });
+      });
+    });
+
+    // google calendar events (read-only display)
+    const gEvents = (state.gcal?.events || []).filter(ev => ev.startISO && ev.endISO);
+    gEvents.forEach(ev=>{
+      const sd=new Date(ev.startISO);
+      const dKey=ymd(sd);
+      if (!occByDay.has(dKey)) return;
+      // filter by search text (optional)
+      const q=(searchEl.value||"").trim().toLowerCase();
+      if (q && !(ev.summary||"").toLowerCase().includes(q)) return;
+      occByDay.get(dKey).push({ kind:"gcal", ev, date: sd });
+    });
+
+    // sort day entries by time
+    occByDay.forEach((arr, k)=>{
+      arr.sort((a,b)=>{
+        const ta = a.kind==="item" ? (a.item.dueISO ? new Date(a.item.dueISO).getTime() : Infinity) : new Date(a.ev.startISO).getTime();
+        const tb = b.kind==="item" ? (b.item.dueISO ? new Date(b.item.dueISO).getTime() : Infinity) : new Date(b.ev.startISO).getTime();
+        return ta - tb;
+      });
+    });
+
+    weekWrap.innerHTML = `
+      <div class="calendar">
+        <div class="calHead">
+          <div>
+            <div style="font-weight:900">Week view</div>
+            <div class="small">${wkStart.toLocaleDateString([], {month:"short", day:"numeric"})} – ${addDays(wkStart,6).toLocaleDateString([], {month:"short", day:"numeric"})}</div>
+          </div>
+          <div class="row">
+            <button class="ghost" id="prevWeekBtn">←</button>
+            <button class="ghost" id="todayWeekBtn">Today</button>
+            <button class="ghost" id="nextWeekBtn">→</button>
+          </div>
+        </div>
+        <div class="calGrid" id="calGrid"></div>
+      </div>
+    `;
+
+    const calGrid = document.getElementById("calGrid");
+    days.forEach((d,i)=>{
+      const key=ymd(d);
+      const isToday = key === ymd(new Date());
+      const col = document.createElement("div");
+      col.className="day";
+      col.innerHTML = `
+        <div class="dayHdr">
+          <span>${dayNames[i]}</span>
+          <span style="${isToday?'font-weight:900;color:#111827':''}">${d.toLocaleDateString([], {month:"short", day:"numeric"})}</span>
+        </div>
+        <div id="day-${key}"></div>
+      `;
+      calGrid.appendChild(col);
+
+      const host = col.querySelector(`#day-${key}`);
+      const entries = occByDay.get(key) || [];
+      entries.forEach(entry=>{
+        if (entry.kind==="item"){
+          const item = entry.item;
+          const time = item.dueISO ? new Date(item.dueISO).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}) : "";
+          const chip = document.createElement("div");
+          chip.className = `chip ${item.type}`;
+          const badge = (entry.status==="done") ? "✅" : (entry.status==="in_progress" ? "🟦" : (entry.status==="waiting" ? "🟨" : "⬜️"));
+          chip.innerHTML = `
+            <div class="c1">${badge} ${escapeHtml(item.title)}</div>
+            <div class="c2">${escapeHtml(time)} ${item.who?("• "+escapeHtml(item.who)):""} ${item.recurrence && item.recurrence!=="none" ? "• 🔁" : ""}</div>
+          `;
+          chip.onclick = ()=>{
+            if (item.recurrence && item.recurrence!=="none"){
+              // toggle this occurrence only
+              const curr = getOccurrenceStatus(item, d);
+              const next = (curr==="done") ? "todo" : "done";
+              setOccurrenceStatus(item, d, next);
+              render();
+            } else {
+              openEdit(item.id);
+            }
+          };
+          host.appendChild(chip);
+        } else {
+          const ev = entry.ev;
+          const sd = new Date(ev.startISO);
+          const ed = new Date(ev.endISO);
+          const time = `${sd.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}–${ed.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
+          const chip = document.createElement("div");
+          chip.className = "chip gcal";
+          chip.innerHTML = `
+            <div class="c1">📅 ${escapeHtml(ev.summary || "(No title)")}</div>
+            <div class="c2">${escapeHtml(time)} ${ev.location?("• "+escapeHtml(ev.location)):""}</div>
+          `;
+          host.appendChild(chip);
+        }
+      });
+    });
+
+    document.getElementById("prevWeekBtn").onclick = ()=>{ weekAnchor = addDays(weekAnchor, -7); render(); };
+    document.getElementById("nextWeekBtn").onclick = ()=>{ weekAnchor = addDays(weekAnchor, 7); render(); };
+    document.getElementById("todayWeekBtn").onclick = ()=>{ weekAnchor = new Date(); render(); };
+  }
+
+  // week anchor lets you move weeks
+  let weekAnchor = new Date();
+
+  function render(){
+    renderTabs();
+    renderKPIs();
+
+    // week view uses anchor
+    const wk = startOfWeek(weekAnchor);
+    // Temporarily shift "today" in renderWeek by overriding startOfWeek call:
+    const realStartOfWeek = startOfWeek;
+    startOfWeek = (d)=> realStartOfWeek(weekAnchor); // hacky but simple for single-file
+    renderWeek();
+    startOfWeek = realStartOfWeek;
+
+    const mode=viewModeEl.value;
+    if (mode==="week"){
+      listEl.style.display="none";
+    } else {
+      listEl.style.display="flex";
+      renderList();
+    }
+
+    scheduleReminders();
+    updateNotifBtnLabel();
+    updateGcalBtnLabel();
+  }
+
+  // ========= Edit =========
+  function openEdit(id){
+    const item = state.items.find(x=>x.id===id);
+    if(!item) return;
+
+    typeEl.value=item.type;
+    statusEl.value=item.status;
+    titleEl.value=item.title;
+    whoEl.value=item.who||"";
+    priorityEl.value=item.priority||"2";
+    notesEl.value=item.notes||"";
+    recurrenceEl.value=item.recurrence||"none";
+    remindMinsEl.value=String(item.remindMins ?? "0");
+
+    const {dueDate, dueTime} = fromISO(item.dueISO);
+    dueDateEl.value=dueDate;
+    dueTimeEl.value=dueTime;
+
+    formEl.dataset.editing=id;
+    submitBtn.textContent="Save";
+    document.getElementById("formHint").textContent="Editing — click Save to update.";
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  formEl.addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const payload = {
+      type: typeEl.value,
+      status: statusEl.value,
+      title: titleEl.value.trim(),
+      who: whoEl.value.trim(),
+      priority: priorityEl.value,
+      notes: notesEl.value,
+      dueISO: toISO(dueDateEl.value, dueTimeEl.value),
+      recurrence: recurrenceEl.value,
+      remindMins: parseInt(remindMinsEl.value,10)
+    };
+    if(!payload.title) return;
+
+    const editingId=formEl.dataset.editing;
+    if(editingId){
+      const idx=state.items.findIndex(x=>x.id===editingId);
+      if(idx!==-1) state.items[idx] = { ...state.items[idx], ...payload };
+      delete formEl.dataset.editing;
+      submitBtn.textContent="Add";
+      document.getElementById("formHint").textContent="Tip: put links in Notes. Search finds them later.";
+    } else {
+      state.items.unshift({ id: uid(), createdAt: Date.now(), ...payload });
+    }
+
+    save();
+    formEl.reset();
+    typeEl.value="assignment";
+    statusEl.value="todo";
+    priorityEl.value="2";
+    recurrenceEl.value="none";
+    remindMinsEl.value="0";
+
+    render();
+  });
+
+  [searchEl, filterTypeEl, filterStatusEl, sortByEl, viewModeEl].forEach(el=>el.addEventListener("input", render));
+
+  // ========= Export/Import =========
+  exportBtn.onclick=()=>{
+    const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="student-life-os-export.json";
+    a.click();
+  };
+  importBtn.onclick=()=>{
+    const inp=document.createElement("input");
+    inp.type="file"; inp.accept="application/json";
+    inp.onchange=async()=>{
+      const f=inp.files?.[0]; if(!f) return;
+      const txt=await f.text();
+      try{
+        const data=JSON.parse(txt);
+        if(!data || !Array.isArray(data.items)) throw new Error("bad");
+        state = { ...structuredClone(DEFAULT_STATE), ...data };
+        save(); render();
+      }catch{ alert("That file doesn't look like a Student Life OS export."); }
+    };
+    inp.click();
+  };
+  resetBtn.onclick=()=>{
+    if(!confirm("Reset everything? This clears your local data.")) return;
+    state=structuredClone(DEFAULT_STATE);
+    save(); render();
+  };
+
+  // ========= Notifications / Reminders =========
+  let reminderTimers = [];
+  function clearReminders(){
+    reminderTimers.forEach(t=>clearTimeout(t));
+    reminderTimers=[];
+  }
+
+  function updateNotifBtnLabel(){
+    const p = Notification?.permission;
+    if (!("Notification" in window)) { notifBtn.textContent="Reminders unsupported"; notifBtn.disabled=true; return; }
+    if (p==="granted") notifBtn.textContent="Reminders enabled";
+    else if (p==="denied") notifBtn.textContent="Reminders blocked";
+    else notifBtn.textContent="Enable reminders";
+  }
+
+  notifBtn.onclick=async()=>{
+    if(!("Notification" in window)) return;
+    const p = await Notification.requestPermission();
+    updateNotifBtnLabel();
+    if(p==="granted") scheduleReminders(true);
+  };
+
+  function scheduleReminders(forceNotify=false){
+    clearReminders();
+    if(!("Notification" in window)) return;
+    if(Notification.permission!=="granted") return;
+
+    const now = Date.now();
+    // schedule next 24h reminders
+    const horizon = now + 24*3600*1000;
+
+    const candidates = state.items.filter(it=>{
+      if(!it.dueISO) return false;
+      if(!it.remindMins || it.remindMins<=0) return false;
+      if(["done","canceled"].includes(it.status)) return false;
+      return true;
+    });
+
+    candidates.forEach(it=>{
+      const due = new Date(it.dueISO).getTime();
+      const fire = due - (it.remindMins*60*1000);
+      if(fire < now || fire > horizon) return;
+
+      const t = setTimeout(()=>{
+        try{
+          new Notification("Student Life OS reminder", {
+            body: `${it.title}${it.who ? " — " + it.who : ""}\nDue: ${prettyDue(it.dueISO)}`,
+          });
+        }catch{}
+      }, Math.max(0, fire-now));
+      reminderTimers.push(t);
+    });
+
+    if(forceNotify){
+      try{ new Notification("Reminders enabled", { body: "You’ll get reminders for items with a reminder set (while this page is open)." }); }catch{}
+    }
+  }
+
+  // ========= Settings =========
+  settingsBtn.onclick=()=>{
+    settingsPanel.style.display = (settingsPanel.style.display==="none" ? "block" : "none");
+    gcalClientIdEl.value = state.settings.gcalClientId || "";
+  };
+  saveSettingsBtn.onclick=()=>{
+    state.settings.gcalClientId = (gcalClientIdEl.value||"").trim();
+    save();
+    alert("Saved settings.");
+    updateGcalBtnLabel();
+  };
+
+  // ========= Google Calendar (optional) =========
+  // This is a minimal client-side OAuth flow using Google Identity Services token client.
+  // Requires you to add Google's script and set a Client ID in settings.
+  // Scopes: read-only by default, optionally add event create later.
+  function updateGcalBtnLabel(){
+    const ok = !!(state.settings.gcalClientId);
+    if(!ok) { gcalBtn.textContent="Connect Google Calendar"; return; }
+    const loggedIn = state.gcal.accessToken && state.gcal.expiresAt > Date.now();
+    gcalBtn.textContent = loggedIn ? "Refresh Google Calendar" : "Connect Google Calendar";
+  }
+
+  function ensureGoogleScript(){
+    return new Promise((resolve,reject)=>{
+      if (window.google && window.google.accounts && window.google.accounts.oauth2) return resolve();
+      const s=document.createElement("script");
+      s.src="https://accounts.google.com/gsi/client";
+      s.async=true; s.defer=true;
+      s.onload=()=>resolve();
+      s.onerror=()=>reject(new Error("Failed to load Google script"));
+      document.head.appendChild(s);
+    });
+  }
+
+  async function gcalAuth(){
+    const clientId = (state.settings.gcalClientId||"").trim();
+    if(!clientId){
+      settingsPanel.style.display="block";
+      alert("Add your Google OAuth Client ID in Settings first.");
+      return;
+    }
+    await ensureGoogleScript();
+
+    return new Promise((resolve,reject)=>{
+      const tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: "https://www.googleapis.com/auth/calendar.readonly",
+        callback: (resp) => {
+          if (resp && resp.access_token){
+            state.gcal.accessToken = resp.access_token;
+            state.gcal.expiresAt = Date.now() + (resp.expires_in*1000) - 30_000;
+            save();
+            resolve(resp.access_token);
+          } else {
+            reject(new Error("No token"));
+          }
+        }
+      });
+      tokenClient.requestAccessToken({ prompt: "" });
+    });
+  }
+
+  async function fetchGcalEventsThisWeek(){
+    if(!(state.gcal.accessToken && state.gcal.expiresAt > Date.now())) return;
+    const wkStart = startOfWeek(new Date());
+    const timeMin = new Date(wkStart); timeMin.setHours(0,0,0,0);
+    const timeMax = addDays(wkStart,7); timeMax.setHours(0,0,0,0);
+
+    const url = new URL("https://www.googleapis.com/calendar/v3/calendars/primary/events");
+    url.searchParams.set("timeMin", timeMin.toISOString());
+    url.searchParams.set("timeMax", timeMax.toISOString());
+    url.searchParams.set("singleEvents", "true");
+    url.searchParams.set("orderBy", "startTime");
+    url.searchParams.set("maxResults", "100");
+
+    const res = await fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${state.gcal.accessToken}` }
+    });
+    if(!res.ok){
+      // token expired / revoked
+      state.gcal.events = [];
+      save();
+      return;
+    }
+    const data = await res.json();
+    const events = (data.items||[]).map(ev=>{
+      const startISO = ev.start?.dateTime || (ev.start?.date ? (ev.start.date+"T00:00:00.000Z") : "");
+      const endISO = ev.end?.dateTime || (ev.end?.date ? (ev.end.date+"T00:00:00.000Z") : "");
+      return {
+        id: ev.id,
+        summary: ev.summary || "",
+        location: ev.location || "",
+        startISO,
+        endISO
+      };
+    }).filter(e=>e.startISO && e.endISO);
+
+    state.gcal.events = events;
+    save();
+  }
+
+  gcalBtn.onclick=async()=>{
+    try{
+      await gcalAuth();
+      await fetchGcalEventsThisWeek();
+      updateGcalBtnLabel();
+      render();
+    }catch(e){
+      alert("Google Calendar connection failed. Check your Client ID + allowed origins/redirects in Google Cloud.");
+    }
+  };
+
+  // ========= Seed =========
+  if(state.items.length===0){
+    const tomorrow = new Date(Date.now()+86400000);
+    state.items = [
+      { id:uid(), createdAt:Date.now()-1000000, type:"assignment", status:"todo", title:"Write POLI paper outline", who:"Professor Kim", priority:"3", notes:"Thesis + 3 sources. Draft intro paragraph.", dueISO: toISO(ymd(tomorrow), "18:00"), recurrence:"none", remindMins:60 },
+      { id:uid(), createdAt:Date.now()-900000, type:"networking", status:"todo", title:"Follow up: coffee chat", who:"Maya (Goldman)", priority:"2", notes:"Send thank-you + ask for 1 referral intro.", dueISO: "", recurrence:"none", remindMins:0 },
+      { id:uid(), createdAt:Date.now()-800000, type:"job", status:"in_progress", title:"Apply: Summer Analyst", who:"JPMorgan", priority:"3", notes:"Resume + cover letter. Put portal link here.", dueISO: "", recurrence:"none", remindMins:0 },
+      { id:uid(), createdAt:Date.now()-700000, type:"meeting", status:"todo", title:"Weekly planning", who:"(you)", priority:"2", notes:"Plan week: classes, tasks, apps, socials.", dueISO: toISO(ymd(new Date()), "09:00"), recurrence:"weekly", remindMins:15 }
+    ];
+    save();
+  }
+
+  // ========= Initial sync =========
+  (async ()=>{
+    updateNotifBtnLabel();
+    updateGcalBtnLabel();
+    gcalClientIdEl.value = state.settings.gcalClientId || "";
+    // if token still valid, refresh events
+    if (state.gcal.accessToken && state.gcal.expiresAt > Date.now()){
+      await fetchGcalEventsThisWeek();
+    }
+    render();
+  })();
+</script>
+</body>
+</html>
