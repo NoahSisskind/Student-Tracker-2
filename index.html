@@ -1,1099 +1,1150 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Student Life OS</title>
+  <meta name="description" content="Student Life OS — assignments, networking, job apps, meetings, social + week calendar + reminders + Google Calendar (optional)." />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root{
-      --bg1:#f6f8ff; --bg2:#ffffff;
-      --card:#ffffff; --card2:#f5f7ff;
-      --text:#0e1633; --muted:#55608a;
-      --line:#dbe2ff;
-      --accent:#3b82f6;
-      --accent2:#7c3aed;
-      --good:#16a34a; --warn:#d97706; --bad:#e11d48;
-      --shadow: 0 12px 40px rgba(16,24,40,.08);
-      --radius: 16px;
+      --bg:#f6f8ff;
+      --panel:#ffffff;
+      --panel2:#fbfcff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e5e7eb;
+      --border2:#dbeafe;
+      --shadow:0 10px 28px rgba(2,6,23,.08);
+      --brand:#4f46e5;
+      --brand2:#7c3aed;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --chip:#eef2ff;
+      --chipText:#3730a3;
+      --focus:0 0 0 4px rgba(79,70,229,.18);
+      --radius:16px;
+      --radiusSm:12px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-family:var(--font);
       color:var(--text);
-      background: radial-gradient(1200px 700px at 20% 0%, #eef3ff 0%, transparent 60%),
-                  radial-gradient(1200px 700px at 80% 20%, #f2eaff 0%, transparent 55%),
-                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      background:
+        radial-gradient(1000px 500px at 15% -10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(900px 520px at 90% 0%, rgba(79,70,229,.16), transparent 62%),
+        var(--bg);
     }
-    header{
-      position:sticky; top:0; z-index:10;
-      background: rgba(246,248,255,.8);
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--line);
-    }
-    .wrap{max-width:1180px;margin:0 auto;padding:16px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    h1{font-size:18px;margin:0}
-    .sub{color:var(--muted);font-size:12px;margin-top:4px}
-    .grid{display:grid;grid-template-columns: 1fr;gap:12px;margin-top:12px}
-    @media(min-width:980px){.grid{grid-template-columns: 1.05fr .95fr}}
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:14px;
+    a{color:var(--brand); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:1200px;margin:26px auto;padding:0 18px 30px}
+    .top{
+      display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+      padding:16px 16px 12px;border:1px solid var(--border);border-radius:var(--radius);
+      background:linear-gradient(180deg, var(--panel), var(--panel2));
       box-shadow:var(--shadow);
     }
-    .card.soft{background:linear-gradient(180deg,var(--card),var(--card2))}
-    input,select,textarea,button{
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:#fff;
-      color:var(--text);
-      padding:10px;
-      font-size:14px;
-      outline:none;
+    .brand{display:flex;flex-direction:column;gap:4px}
+    .brand h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .sub{font-size:12.5px;color:var(--muted)}
+    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    button, .btn{
+      appearance:none;border:1px solid var(--border);background:var(--panel);
+      padding:9px 12px;border-radius:12px;cursor:pointer;font-weight:600;font-size:13px;
+      color:var(--text); box-shadow:0 2px 0 rgba(2,6,23,.04);
     }
-    input:focus,select:focus,textarea:focus{border-color:#b9c7ff; box-shadow:0 0 0 4px rgba(59,130,246,.10)}
-    textarea{min-height:84px;resize:vertical;width:100%}
-    button{cursor:pointer}
-    button.primary{
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      border:none;color:#fff;font-weight:800;
+    button:hover{border-color:#cbd5e1}
+    button:focus{outline:none;box-shadow:var(--focus)}
+    .primary{
+      background:linear-gradient(180deg, rgba(79,70,229,.12), rgba(79,70,229,.06));
+      border-color:rgba(79,70,229,.35);
+      color:#1e1b4b;
     }
-    button.ghost{background:transparent}
-    button.danger{background:transparent;border:1px solid #ffd2de;color:var(--bad)}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .tab{
-      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
-      background:#fff;color:var(--muted);
+    .danger{
+      background:linear-gradient(180deg, rgba(239,68,68,.12), rgba(239,68,68,.06));
+      border-color:rgba(239,68,68,.35);
+      color:#7f1d1d;
     }
-    .tab.active{background:rgba(59,130,246,.10); color:var(--text); border-color:rgba(59,130,246,.35)}
-    .kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    @media(min-width:800px){.kpi{grid-template-columns:repeat(5,1fr)}}
-    .kpiBox{padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff}
-    .kpiNum{font-weight:900;font-size:20px}
-    .small{font-size:12px;color:var(--muted)}
-    .hr{height:1px;background:var(--line);margin:12px 0}
-    .split{display:grid;grid-template-columns:1fr;gap:10px}
-    @media(min-width:760px){.split{grid-template-columns:1fr 1fr}}
-    .list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
-    .item{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:10px;
-      background:linear-gradient(180deg,#fff,#fbfcff);
-    }
-    .itemTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .title{font-weight:900}
-    .meta{color:var(--muted);font-size:12px;margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
     .pill{
-      display:inline-flex;align-items:center;gap:6px;
-      border:1px solid var(--line);color:var(--muted);
-      padding:4px 8px;border-radius:999px;font-size:12px;background:#fff;
+      display:inline-flex;gap:6px;align-items:center;
+      padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--chipText);
+      border:1px solid rgba(79,70,229,.18);font-size:12px;font-weight:700;
     }
-    .pill.good{border-color:rgba(22,163,74,.30);color:var(--good)}
-    .pill.warn{border-color:rgba(217,119,6,.30);color:var(--warn)}
-    .pill.bad{border-color:rgba(225,29,72,.30);color:var(--bad)}
-    .rightBtns{display:flex;flex-direction:column;gap:8px}
-    .calendar{
-      border:1px solid var(--line);
-      border-radius:var(--radius);
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .panel{
+      border:1px solid var(--border);border-radius:var(--radius);
+      background:linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow:var(--shadow);
       overflow:hidden;
+    }
+    .panelHead{
+      padding:12px 14px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+      border-bottom:1px solid var(--border);
+    }
+    .panelHead h2{margin:0;font-size:14px}
+    .panelBody{padding:14px}
+    .kpis{
+      display:grid;grid-template-columns: repeat(5, 1fr);gap:10px;margin-top:12px;
+    }
+    @media (max-width: 980px){ .kpis{grid-template-columns: repeat(2,1fr)} }
+    .kpi{
+      border:1px solid var(--border);border-radius:14px;background:#fff;padding:12px 12px 10px;
+    }
+    .kpi .label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:10px}
+    .kpi .val{font-size:22px;font-weight:900;margin-top:6px}
+    .filters{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center
+    }
+    input[type="text"], textarea, select, input[type="date"], input[type="time"], input[type="number"]{
+      width:100%;
+      padding:10px 11px;
+      border:1px solid var(--border);
+      border-radius:12px;
       background:#fff;
+      font-size:13px;
+      color:var(--text);
     }
-    .calHead{
-      display:flex;justify-content:space-between;align-items:center;
-      padding:10px;border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg,#fff,#f6f8ff);
+    input:focus, textarea:focus, select:focus{outline:none;box-shadow:var(--focus);border-color:rgba(79,70,229,.35)}
+    textarea{min-height:84px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .row3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px}
+    @media (max-width: 560px){ .row,.row3{grid-template-columns:1fr} }
+    .labelSm{font-size:12px;color:var(--muted);margin:0 0 6px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{
+      padding:7px 10px;border-radius:999px;border:1px solid var(--border);
+      background:#fff;cursor:pointer;font-weight:800;font-size:12px;color:#1f2937;
     }
-    .calGrid{
+    .tab.active{
+      border-color:rgba(79,70,229,.35);
+      background:linear-gradient(180deg, rgba(79,70,229,.12), rgba(79,70,229,.05));
+      color:#1e1b4b;
+    }
+    .list{display:flex;flex-direction:column;gap:10px}
+    .item{
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .item .left{min-width:0;flex:1}
+    .title{font-weight:900;margin:0 0 6px;font-size:14px}
+    .meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .chip{
+      display:inline-flex;gap:6px;align-items:center;
+      font-size:12px;font-weight:800;
+      padding:4px 9px;border-radius:999px;border:1px solid var(--border2);
+      background:#f8fafc;color:#334155;
+      max-width:100%;
+    }
+    .chip.bad{border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.08);color:#7f1d1d}
+    .chip.warn{border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.10);color:#7c2d12}
+    .chip.ok{border-color:rgba(22,163,74,.25);background:rgba(22,163,74,.10);color:#14532d}
+    .note{color:#475569;font-size:12.5px;line-height:1.35;white-space:pre-wrap}
+    .btns{display:flex;flex-direction:column;gap:8px}
+    .iconBtn{
+      width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+      border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:900;
+    }
+    .iconBtn.done{border-color:rgba(22,163,74,.35);background:rgba(22,163,74,.08);color:#14532d}
+    .iconBtn.del{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);color:#7f1d1d}
+    .muted{color:var(--muted);font-size:12px}
+    .sep{height:1px;background:var(--border);margin:10px 0}
+    .weekWrap{
+      padding:12px;border:1px solid var(--border);border-radius:14px;background:#fff;
+    }
+    .weekHead{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px
+    }
+    .weekHead .range{font-weight:900}
+    .weekGrid{
       display:grid;
       grid-template-columns: repeat(7, 1fr);
-      min-height: 260px;
+      gap:8px;
     }
     .day{
-      border-right:1px solid var(--line);
-      border-top:1px solid var(--line);
-      padding:10px;
-      min-height: 190px;
-      background:#fff;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:linear-gradient(180deg, #ffffff, #fbfcff);
+      min-height:160px;
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
-    .day:last-child{border-right:none}
-    .dayHdr{
-      display:flex;justify-content:space-between;align-items:center;
-      margin-bottom:8px;
-      color:var(--muted);font-size:12px;
-    }
-    .chip{
-      display:block;
-      border:1px solid var(--line);
-      border-left:4px solid rgba(59,130,246,.65);
-      border-radius:10px;
-      padding:6px 8px;
-      margin:6px 0;
-      background:#fff;
+    .day .dtop{display:flex;justify-content:space-between;align-items:baseline}
+    .dow{font-size:12px;color:var(--muted);font-weight:900}
+    .dnum{font-size:12px;color:#1f2937;font-weight:900}
+    .blocks{display:flex;flex-direction:column;gap:6px}
+    .block{
+      border:1px solid rgba(79,70,229,.18);
+      background:rgba(79,70,229,.07);
+      border-left:4px solid rgba(79,70,229,.55);
+      border-radius:12px;
+      padding:8px 8px;
       font-size:12px;
-      cursor:pointer;
+      overflow:hidden;
     }
-    .chip .c1{font-weight:800; color:var(--text)}
-    .chip .c2{color:var(--muted); margin-top:2px}
-    .chip.job{border-left-color: rgba(124,58,237,.65)}
-    .chip.social{border-left-color: rgba(236,72,153,.65)}
-    .chip.meeting{border-left-color: rgba(245,158,11,.65)}
-    .chip.networking{border-left-color: rgba(16,185,129,.65)}
-    .chip.assignment{border-left-color: rgba(59,130,246,.65)}
-    .chip.class{border-left-color: rgba(14,116,144,.65)}
-    .chip.gcal{border-left-color: rgba(239,68,68,.65)}
-    .tagRow{display:flex; gap:8px; flex-wrap:wrap}
-    .notice{padding:10px;border:1px dashed #c7d2fe;border-radius:14px;background:#f8faff;color:var(--muted);font-size:12px}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .block.gcal{
+      border:1px solid rgba(100,116,139,.22);
+      background:rgba(100,116,139,.07);
+      border-left:4px solid rgba(100,116,139,.55);
+    }
+    .block .btitle{font-weight:900;line-height:1.15;margin-bottom:4px}
+    .block .btime{color:#334155;font-weight:800}
+    .block .bsub{color:#64748b;font-weight:800}
+    .tiny{font-size:11px;color:var(--muted)}
+    .footerNote{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.4}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .toast{
+      position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+      background:#0b1220;color:#e2e8f0;border:1px solid rgba(255,255,255,.08);
+      padding:10px 12px;border-radius:999px;box-shadow:0 16px 40px rgba(2,6,23,.25);
+      display:none;gap:8px;align-items:center;font-size:13px;font-weight:800;
+      z-index:9999;
+    }
   </style>
 </head>
+
 <body>
-<header>
   <div class="wrap">
-    <div class="row" style="justify-content:space-between">
-      <div>
+    <div class="top">
+      <div class="brand">
         <h1>Student Life OS</h1>
-        <div class="sub">Assignments • Networking • Job Apps • Meetings • Social • Week calendar • Recurring tasks • Reminders</div>
+        <div class="sub">
+          Assignments • Networking • Job apps • Meetings • Social • Week calendar • Recurring tasks • Reminders
+          <span class="pill" id="storagePill">stored locally</span>
+        </div>
       </div>
-      <div class="row">
-        <button class="ghost" id="notifBtn">Enable reminders</button>
-        <button class="ghost" id="gcalBtn">Connect Google Calendar</button>
-        <button class="ghost" id="exportBtn">Export</button>
-        <button class="ghost" id="importBtn">Import</button>
+      <div class="actions">
+        <button class="primary" id="remindersBtn">Enable reminders</button>
+        <button class="primary" id="gcalBtn">Connect Google Calendar</button>
+        <button id="refreshGcalBtn" style="display:none">Refresh Google Calendar</button>
+        <button id="exportBtn">Export</button>
+        <button id="importBtn">Import</button>
         <button class="danger" id="resetBtn">Reset</button>
       </div>
     </div>
 
-    <div class="row" style="margin-top:12px">
-      <input id="search" placeholder="Search everything (title, notes, company, people…)" style="flex:1;min-width:240px"/>
-      <select id="filterType">
-        <option value="all">All categories</option>
-        <option value="assignment">Assignments</option>
-        <option value="class">Classes</option>
-        <option value="networking">Networking</option>
-        <option value="job">Job Apps</option>
-        <option value="meeting">Meetings</option>
-        <option value="social">Social</option>
-      </select>
-      <select id="filterStatus">
-        <option value="all">All statuses</option>
-        <option value="todo">To do</option>
-        <option value="in_progress">In progress</option>
-        <option value="waiting">Waiting</option>
-        <option value="done">Done</option>
-        <option value="canceled">Canceled</option>
-      </select>
-      <select id="sortBy">
-        <option value="dueAsc">Sort: due soon</option>
-        <option value="dueDesc">Sort: due last</option>
-        <option value="createdDesc">Sort: newest</option>
-        <option value="createdAsc">Sort: oldest</option>
-        <option value="priorityDesc">Sort: priority</option>
-      </select>
-      <select id="viewMode">
-        <option value="list">View: list</option>
-        <option value="week">View: week</option>
-        <option value="both">View: both</option>
-      </select>
+    <div class="filters">
+      <div style="flex:1; min-width:240px">
+        <input id="search" type="text" placeholder="Search everything (title, notes, company, people…)" />
+      </div>
+      <div style="min-width:180px">
+        <select id="catFilter"></select>
+      </div>
+      <div style="min-width:160px">
+        <select id="statusFilter"></select>
+      </div>
+      <div style="min-width:170px">
+        <select id="sortBy">
+          <option value="dueSoon">Sort: due soon</option>
+          <option value="createdNew">Sort: newest</option>
+          <option value="priorityHigh">Sort: priority</option>
+          <option value="alpha">Sort: A→Z</option>
+        </select>
+      </div>
+      <div style="min-width:140px">
+        <select id="viewMode">
+          <option value="list">View: list</option>
+          <option value="week">View: week</option>
+          <option value="both">View: both</option>
+        </select>
+      </div>
     </div>
 
-    <div class="tabs" id="tabs"></div>
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label"><span>Open items</span><span class="muted">not done</span></div>
+        <div class="val" id="kOpen">0</div>
+      </div>
+      <div class="kpi">
+        <div class="label"><span>Due in 48h</span><span class="muted">urgent</span></div>
+        <div class="val" id="kSoon">0</div>
+      </div>
+      <div class="kpi">
+        <div class="label"><span>Overdue</span><span class="muted">past due</span></div>
+        <div class="val" id="kOver">0</div>
+      </div>
+      <div class="kpi">
+        <div class="label"><span>Networking to do</span><span class="muted">open</span></div>
+        <div class="val" id="kNet">0</div>
+      </div>
+      <div class="kpi">
+        <div class="label"><span>This week</span><span class="muted">occurrences</span></div>
+        <div class="val" id="kWeek">0</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="panelHead">
+          <h2>Add / edit item</h2>
+          <div class="muted">Recurring tasks generate occurrences in week view. Reminders fire while this page is open.</div>
+        </div>
+        <div class="panelBody">
+          <div class="row3">
+            <div>
+              <div class="labelSm">Category</div>
+              <select id="type">
+                <option value="assignment">Assignment</option>
+                <option value="class">Class</option>
+                <option value="networking">Networking</option>
+                <option value="job">Job app</option>
+                <option value="meeting">Meeting</option>
+                <option value="social">Social</option>
+                <option value="personal">Personal</option>
+              </select>
+            </div>
+            <div>
+              <div class="labelSm">Status</div>
+              <select id="status">
+                <option value="todo">To do</option>
+                <option value="in_progress">In progress</option>
+                <option value="waiting">Waiting</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <div>
+              <div class="labelSm">Priority</div>
+              <select id="priority">
+                <option value="1">Low</option>
+                <option value="2" selected>Medium</option>
+                <option value="3">High</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="labelSm">Title</div>
+            <input id="title" type="text" placeholder="e.g., Econ pset #3 / Coffee chat / Apply to internship" />
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <div>
+              <div class="labelSm">Date (optional)</div>
+              <input id="date" type="date" />
+            </div>
+            <div>
+              <div class="labelSm">Time (optional)</div>
+              <input id="time" type="time" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <div>
+              <div class="labelSm">People / Company (optional)</div>
+              <input id="who" type="text" placeholder="e.g., Maya (Goldman) / Professor Kim" />
+            </div>
+            <div>
+              <div class="labelSm">Reminder</div>
+              <select id="reminder">
+                <option value="0">No reminder</option>
+                <option value="5">5 min before</option>
+                <option value="10">10 min before</option>
+                <option value="30">30 min before</option>
+                <option value="60">60 min before</option>
+                <option value="180">3 hours before</option>
+                <option value="1440">1 day before</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <div>
+              <div class="labelSm">Recurring</div>
+              <select id="recurring">
+                <option value="none" selected>None</option>
+                <option value="daily">Daily</option>
+                <option value="weekdays">Weekdays (Mon–Fri)</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Every 2 weeks</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div>
+              <div class="labelSm">Recurring ends</div>
+              <input id="recurringUntil" type="date" />
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="labelSm">Notes</div>
+            <textarea id="notes" placeholder="Links, next steps, what to say, meeting agenda, etc."></textarea>
+          </div>
+
+          <div class="sep"></div>
+
+          <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+            <div class="muted">Tip: put links in Notes. Search finds them later.</div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button id="clearFormBtn">Clear</button>
+              <button class="primary" id="saveBtn">Add</button>
+            </div>
+          </div>
+
+          <div class="footerNote">
+            <strong>Sharing:</strong> This site stores data <strong>only in each person’s browser</strong> (localStorage). If someone opens your link, they get their own empty copy unless they import/export.
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panelHead">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <h2 style="margin:0">Your items</h2>
+            <div class="muted">Click an item to edit. ✓ toggles done.</div>
+          </div>
+          <div class="tabs" id="tabs"></div>
+        </div>
+        <div class="panelBody">
+          <button id="settingsToggle" class="btn" style="margin-bottom:10px">Settings</button>
+
+          <div id="settingsBox" style="display:none">
+            <div style="padding:12px;border:1px solid var(--border);border-radius:14px;background:#fff">
+              <div style="font-weight:900;margin-bottom:6px">Google Calendar (optional)</div>
+              <div class="muted" style="margin-bottom:8px">
+                Paste your Google OAuth Client ID (Web). Works on GitHub Pages/Vercel. For Google Cloud:
+                <span class="mono">Authorized JS origin</span> = <span class="mono">https://noahsisskind.github.io</span> (your username may differ).
+                Add yourself as a <span class="mono">Test user</span> in Google Auth Platform → Audience.
+              </div>
+
+              <div class="row" style="align-items:end">
+                <div>
+                  <div class="labelSm">OAuth Client ID</div>
+                  <input id="clientId" class="mono" type="text" placeholder="xxxxx.apps.googleusercontent.com" />
+                  <div class="tiny" id="originLine"></div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <button id="saveClientIdBtn" class="primary">Save</button>
+                  <button id="disconnectBtn">Disconnect</button>
+                </div>
+              </div>
+
+              <div id="gcalPicker" style="display:none;margin-top:10px"></div>
+            </div>
+            <div class="sep"></div>
+          </div>
+
+          <div id="weekPanel" style="display:none">
+            <div class="weekWrap">
+              <div class="weekHead">
+                <div>
+                  <div class="range" id="weekRange">Week</div>
+                  <div class="tiny" id="weekCounts"></div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <button id="prevWeekBtn">←</button>
+                  <button id="todayBtn">Today</button>
+                  <button id="nextWeekBtn">→</button>
+                </div>
+              </div>
+              <div class="weekGrid" id="weekGrid"></div>
+            </div>
+            <div class="sep"></div>
+          </div>
+
+          <div class="list" id="list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
   </div>
-</header>
-
-<main class="wrap">
-  <div class="kpi" id="kpis"></div>
-
-  <div class="grid">
-    <section class="card soft">
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <div class="title">Add / edit item</div>
-          <div class="small">Recurring tasks generate occurrences in the week view. Reminders fire while this page is open.</div>
-        </div>
-      </div>
-
-      <div class="hr"></div>
-
-      <form id="form">
-        <div class="split">
-          <div>
-            <label class="small">Category</label><br/>
-            <select id="type" style="width:100%">
-              <option value="assignment">Assignment</option>
-              <option value="class">Class</option>
-              <option value="networking">Networking</option>
-              <option value="job">Job Application</option>
-              <option value="meeting">Meeting / Planning</option>
-              <option value="social">Social</option>
-            </select>
-          </div>
-          <div>
-            <label class="small">Status</label><br/>
-            <select id="status" style="width:100%">
-              <option value="todo">To do</option>
-              <option value="in_progress">In progress</option>
-              <option value="waiting">Waiting</option>
-              <option value="done">Done</option>
-              <option value="canceled">Canceled</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:10px">
-          <label class="small">Title</label><br/>
-          <input id="title" required placeholder="e.g., Econ pset #3 / Coffee chat / Apply to internship" style="width:100%"/>
-        </div>
-
-        <div class="split" style="margin-top:10px">
-          <div>
-            <label class="small">Date</label><br/>
-            <input id="dueDate" type="date" style="width:100%"/>
-          </div>
-          <div>
-            <label class="small">Time</label><br/>
-            <input id="dueTime" type="time" style="width:100%"/>
-          </div>
-        </div>
-
-        <div class="split" style="margin-top:10px">
-          <div>
-            <label class="small">People / Company (optional)</label><br/>
-            <input id="who" placeholder="e.g., Maya (Goldman) / Professor Kim" style="width:100%"/>
-          </div>
-          <div>
-            <label class="small">Priority</label><br/>
-            <select id="priority" style="width:100%">
-              <option value="3">High</option>
-              <option value="2" selected>Medium</option>
-              <option value="1">Low</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="split" style="margin-top:10px">
-          <div>
-            <label class="small">Recurring</label><br/>
-            <select id="recurrence" style="width:100%">
-              <option value="none" selected>None</option>
-              <option value="daily">Daily</option>
-              <option value="weekdays">Weekdays (Mon–Fri)</option>
-              <option value="weekly">Weekly</option>
-              <option value="biweekly">Every 2 weeks</option>
-              <option value="monthly">Monthly</option>
-            </select>
-          </div>
-          <div>
-            <label class="small">Reminder</label><br/>
-            <select id="remindMins" style="width:100%">
-              <option value="0" selected>No reminder</option>
-              <option value="5">5 min before</option>
-              <option value="15">15 min before</option>
-              <option value="60">1 hour before</option>
-              <option value="1440">1 day before</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:10px">
-          <label class="small">Notes</label><br/>
-          <textarea id="notes" placeholder="Links, next steps, what to say, meeting agenda, etc."></textarea>
-        </div>
-
-        <div class="row" style="margin-top:10px;justify-content:space-between">
-          <div class="small" id="formHint">Tip: put links in Notes. Search finds them later.</div>
-          <button class="primary" type="submit" id="submitBtn">Add</button>
-        </div>
-      </form>
-
-      <div class="hr"></div>
-      <div class="notice">
-        <div><b>Sharing with others:</b> host this file as a website (GitHub Pages / Vercel). Data is stored per-user in their browser unless you add a backend.</div>
-        <div style="margin-top:6px"><b>Google Calendar:</b> optional. You can connect after you create a Google OAuth Client ID and paste it into settings (instructions below).</div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <div class="title">Your items</div>
-          <div class="small">Click an item to edit. ✓ toggles done. Week view shows this week + recurring occurrences.</div>
-        </div>
-        <div class="tagRow">
-          <button class="ghost" id="settingsBtn">Settings</button>
-        </div>
-      </div>
-
-      <div id="settingsPanel" class="notice" style="display:none; margin-top:10px">
-        <div style="font-weight:800">Settings</div>
-        <div class="small" style="margin-top:6px">
-          Optional Google OAuth Client ID (for Calendar). Create in Google Cloud Console → OAuth 2.0 Client (Web).
-          Add your site URL to Authorized JavaScript origins and Authorized redirect URIs.
-        </div>
-        <div class="row" style="margin-top:8px">
-          <input id="gcalClientId" placeholder="Google OAuth Client ID (ends with .apps.googleusercontent.com)" style="flex:1; min-width:260px"/>
-          <button class="ghost" id="saveSettingsBtn">Save</button>
-        </div>
-        <div class="small" style="margin-top:6px">
-          Current origin: <span class="mono" id="originLabel"></span>
-        </div>
-      </div>
-
-      <div id="weekWrap" style="display:none; margin-top:10px"></div>
-      <div class="list" id="list"></div>
-    </section>
-  </div>
-</main>
 
 <script>
-  // ========= Storage =========
-  const STORAGE_KEY = "student_life_os_v2";
-  const DEFAULT_STATE = {
-    items: [],
-    activeTab: "all",
-    settings: { gcalClientId: "" },
-    gcal: { accessToken: "", expiresAt: 0, events: [] },
-    // track completion of recurring occurrences by "itemId|YYYY-MM-DD"
-    occurrenceStatus: {}
+(() => {
+  // =========================
+  // Storage + state
+  // =========================
+  const STORAGE_KEY = "studentLifeOS:v2";
+  const CLIENT_KEY  = "studentLifeOS:gcal:clientId";
+  const GCAL_SEL_KEY = "studentLifeOS:gcal:selectedCalendars";
+
+  const now = () => Date.now();
+  const uid = () => Math.random().toString(36).slice(2) + "-" + Math.random().toString(36).slice(2);
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+  const pad2 = n => String(n).padStart(2,"0");
+
+  const TYPES = [
+    { id:"all", label:"All" },
+    { id:"assignment", label:"Assignments" },
+    { id:"class", label:"Classes" },
+    { id:"networking", label:"Networking" },
+    { id:"job", label:"Job Apps" },
+    { id:"meeting", label:"Meetings" },
+    { id:"social", label:"Social" },
+    { id:"personal", label:"Personal" }
+  ];
+
+  const STATUSES = [
+    { id:"all", label:"All statuses" },
+    { id:"todo", label:"To do" },
+    { id:"in_progress", label:"In progress" },
+    { id:"waiting", label:"Waiting" },
+    { id:"done", label:"Done" }
+  ];
+
+  const PRIORITY_LABEL = { "1":"Low", "2":"Medium", "3":"High" };
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return { items:[], activeTab:"all", viewMode:"list", gcal:{ connected:false } };
+      const s = JSON.parse(raw);
+      if(!s.items) s.items = [];
+      if(!s.activeTab) s.activeTab = "all";
+      if(!s.viewMode) s.viewMode = "list";
+      if(!s.gcal) s.gcal = { connected:false };
+      return s;
+    }catch{
+      return { items:[], activeTab:"all", viewMode:"list", gcal:{ connected:false } };
+    }
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  let state = loadState();
+  let editingId = null;
+
+  // =========================
+  // DOM
+  // =========================
+  const $ = sel => document.querySelector(sel);
+  const el = {
+    storagePill: $("#storagePill"),
+    search: $("#search"),
+    catFilter: $("#catFilter"),
+    statusFilter: $("#statusFilter"),
+    sortBy: $("#sortBy"),
+    viewMode: $("#viewMode"),
+    tabs: $("#tabs"),
+    list: $("#list"),
+    weekPanel: $("#weekPanel"),
+    weekGrid: $("#weekGrid"),
+    weekRange: $("#weekRange"),
+    weekCounts: $("#weekCounts"),
+
+    type: $("#type"),
+    status: $("#status"),
+    title: $("#title"),
+    date: $("#date"),
+    time: $("#time"),
+    who: $("#who"),
+    priority: $("#priority"),
+    notes: $("#notes"),
+    reminder: $("#reminder"),
+    recurring: $("#recurring"),
+    recurringUntil: $("#recurringUntil"),
+
+    clearFormBtn: $("#clearFormBtn"),
+    saveBtn: $("#saveBtn"),
+
+    exportBtn: $("#exportBtn"),
+    importBtn: $("#importBtn"),
+    resetBtn: $("#resetBtn"),
+
+    kOpen: $("#kOpen"),
+    kSoon: $("#kSoon"),
+    kOver: $("#kOver"),
+    kNet: $("#kNet"),
+    kWeek: $("#kWeek"),
+
+    remindersBtn: $("#remindersBtn"),
+    settingsToggle: $("#settingsToggle"),
+    settingsBox: $("#settingsBox"),
+
+    clientId: $("#clientId"),
+    saveClientIdBtn: $("#saveClientIdBtn"),
+    originLine: $("#originLine"),
+    disconnectBtn: $("#disconnectBtn"),
+
+    gcalBtn: $("#gcalBtn"),
+    refreshGcalBtn: $("#refreshGcalBtn"),
+    gcalPicker: $("#gcalPicker"),
+
+    prevWeekBtn: $("#prevWeekBtn"),
+    nextWeekBtn: $("#nextWeekBtn"),
+    todayBtn: $("#todayBtn"),
+
+    toast: $("#toast"),
   };
 
-  function load() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return structuredClone(DEFAULT_STATE);
-      const s = JSON.parse(raw);
-      return { ...structuredClone(DEFAULT_STATE), ...s, settings:{...DEFAULT_STATE.settings, ...(s.settings||{})},
-               gcal:{...DEFAULT_STATE.gcal, ...(s.gcal||{})}, occurrenceStatus: s.occurrenceStatus || {} };
-    } catch {
-      return structuredClone(DEFAULT_STATE);
-    }
+  // =========================
+  // Toast
+  // =========================
+  let toastTimer = null;
+  function toast(msg){
+    clearTimeout(toastTimer);
+    el.toast.textContent = msg;
+    el.toast.style.display = "inline-flex";
+    toastTimer = setTimeout(()=> el.toast.style.display="none", 2000);
   }
-  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-  let state = load();
+  // =========================
+  // Date helpers
+  // =========================
+  function toLocalDateStr(d){
+    const yyyy = d.getFullYear();
+    const mm = pad2(d.getMonth()+1);
+    const dd = pad2(d.getDate());
+    return `${yyyy}-${mm}-${dd}`;
+  }
 
-  // ========= Constants =========
-  const TYPES = [
-    {key:"all", label:"All"},
-    {key:"assignment", label:"Assignments"},
-    {key:"class", label:"Classes"},
-    {key:"networking", label:"Networking"},
-    {key:"job", label:"Job Apps"},
-    {key:"meeting", label:"Meetings"},
-    {key:"social", label:"Social"},
-  ];
-  const STATUS_LABELS = { todo:"To do", in_progress:"In progress", waiting:"Waiting", done:"Done", canceled:"Canceled" };
-
-  // ========= Helpers =========
-  function uid(){ return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16); }
-  const pad = (n)=>String(n).padStart(2,"0");
-  function ymd(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-  function startOfWeek(d){ // Monday
+  function startOfDay(d){
     const x = new Date(d);
-    const day = (x.getDay()+6)%7; // Mon=0
     x.setHours(0,0,0,0);
-    x.setDate(x.getDate()-day);
     return x;
   }
-  function addDays(d, n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
-  function toISO(dateStr, timeStr){
-    if (!dateStr) return "";
-    const t = timeStr || "23:59";
-    const local = new Date(dateStr + "T" + t);
-    return local.toISOString();
-  }
-  function fromISO(iso){
-    if(!iso) return {dueDate:"", dueTime:""};
-    const d=new Date(iso);
-    return { dueDate: `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,
-             dueTime: `${pad(d.getHours())}:${pad(d.getMinutes())}` };
-  }
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-  }
-  function prettyDue(iso){
-    if(!iso) return "No date";
-    const d=new Date(iso);
-    return d.toLocaleString([], {weekday:"short", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"});
-  }
-  function statusPillClass(status, dueISO){
-    if (status==="done") return "pill good";
-    if (status==="canceled") return "pill";
-    if (!dueISO) return "pill";
-    const due=new Date(dueISO).getTime(), now=Date.now();
-    const diffHrs=(due-now)/36e5;
-    if (diffHrs<0) return "pill bad";
-    if (diffHrs<48) return "pill warn";
-    return "pill";
-  }
-  function typeLabel(type){ return (TYPES.find(t=>t.key===type)?.label || type); }
 
-  // ========= Recurrence =========
-  function occursOn(item, dateObj){
-    // For non-recurring: occurs on its dueDate only
-    const rec = item.recurrence || "none";
-    const baseDate = item.dueISO ? new Date(item.dueISO) : null;
-    if (!baseDate) return false;
-    const targetYMD = ymd(dateObj);
-    const baseYMD = ymd(baseDate);
+  function parseDue(item){
+    if(!item.dueDate) return null;
+    const d = new Date(item.dueDate + "T" + (item.dueTime || "00:00"));
+    return isNaN(d.getTime()) ? null : d;
+  }
 
-    if (rec==="none") return targetYMD === baseYMD;
+  function startOfWeek(d){ // Monday
+    const x = startOfDay(d);
+    const day = x.getDay(); // 0 Sun
+    const diff = (day === 0 ? -6 : 1 - day);
+    x.setDate(x.getDate() + diff);
+    return x;
+  }
 
-    // Use base date as anchor
-    const daysDiff = Math.floor((new Date(targetYMD) - new Date(baseYMD)) / 86400000);
-    if (daysDiff < 0) return false;
+  function addDays(d, n){
+    const x = new Date(d);
+    x.setDate(x.getDate() + n);
+    return x;
+  }
 
-    if (rec==="daily") return true;
-    if (rec==="weekdays"){
-      const dow = dateObj.getDay(); // 0 Sun .. 6 Sat
-      return dow>=1 && dow<=5;
+  function formatNiceDateTime(d){
+    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const hh = d.getHours();
+    const mm = pad2(d.getMinutes());
+    const ap = hh >= 12 ? "PM" : "AM";
+    const h12 = ((hh + 11) % 12) + 1;
+    return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${h12}:${mm} ${ap}`;
+  }
+
+  function formatTimeRange(start, end){
+    // start/end can be dateTime strings or date strings
+    const sAllDay = start && start.length === 10;
+    const eAllDay = end && end.length === 10;
+    if(sAllDay){
+      return "All day";
     }
-    if (rec==="weekly") return (daysDiff % 7) === 0;
-    if (rec==="biweekly") return (daysDiff % 14) === 0;
-    if (rec==="monthly"){
-      // same day-of-month; if base is 31 and month has fewer days, skip
-      return dateObj.getDate() === baseDate.getDate();
+    try{
+      const sd = new Date(start);
+      const ed = new Date(end);
+      const sh = ((sd.getHours()+11)%12)+1;
+      const eh = ((ed.getHours()+11)%12)+1;
+      const sm = pad2(sd.getMinutes());
+      const em = pad2(ed.getMinutes());
+      const sap = sd.getHours()>=12?"PM":"AM";
+      const eap = ed.getHours()>=12?"PM":"AM";
+      return `${sh}:${sm} ${sap}–${eh}:${em} ${eap}`;
+    }catch{
+      return "";
+    }
+  }
+
+  // =========================
+  // Recurring logic (simple)
+  // =========================
+  function occursOnDate(item, dateObj){
+    // Returns true if item (possibly recurring) occurs on dateObj (local)
+    const due = parseDue(item);
+    if(!due) return false;
+
+    const day = startOfDay(dateObj).getTime();
+    const base = startOfDay(due).getTime();
+    if(day < base) return false;
+
+    // recurring end
+    if(item.recurringUntil){
+      const until = startOfDay(new Date(item.recurringUntil)).getTime();
+      if(day > until) return false;
+    }
+
+    const rule = item.recurring || "none";
+    if(rule === "none") return day === base;
+
+    const diffDays = Math.floor((day - base) / 86400000);
+    if(rule === "daily") return true;
+    if(rule === "weekdays"){
+      const dow = dateObj.getDay();
+      return dow >= 1 && dow <= 5;
+    }
+    if(rule === "weekly") return diffDays % 7 === 0;
+    if(rule === "biweekly") return diffDays % 14 === 0;
+    if(rule === "monthly"){
+      // same day-of-month
+      const bd = new Date(base);
+      return dateObj.getDate() === bd.getDate();
     }
     return false;
   }
 
-  function occurrenceKey(itemId, dateObj){ return `${itemId}|${ymd(dateObj)}`; }
-  function getOccurrenceStatus(item, dateObj){
-    const k = occurrenceKey(item.id, dateObj);
-    return state.occurrenceStatus[k] || "todo";
+  function occurrencesInWeek(weekStart){
+    const days = [...Array(7)].map((_,i)=> addDays(weekStart,i));
+    const occ = [];
+    for(const item of state.items){
+      if(item.status === "done") continue;
+      const due = parseDue(item);
+      if(!due) continue;
+      for(const d of days){
+        if(occursOnDate(item, d)){
+          occ.push({ kind:"task", item, date: d });
+        }
+      }
+    }
+    return occ;
   }
-  function setOccurrenceStatus(item, dateObj, status){
-    const k = occurrenceKey(item.id, dateObj);
-    state.occurrenceStatus[k] = status;
-    save();
+
+  // =========================
+  // Reminders (while page open)
+  // =========================
+  let remindersEnabled = false;
+  let reminderTimers = [];
+  function clearReminderTimers(){
+    for(const t of reminderTimers) clearTimeout(t);
+    reminderTimers = [];
   }
 
-  // ========= DOM =========
-  const tabsEl = document.getElementById("tabs");
-  const kpisEl = document.getElementById("kpis");
-  const listEl = document.getElementById("list");
-  const weekWrap = document.getElementById("weekWrap");
+  function scheduleReminders(){
+    clearReminderTimers();
+    if(!remindersEnabled) return;
+    const nowMs = Date.now();
 
-  const searchEl = document.getElementById("search");
-  const filterTypeEl = document.getElementById("filterType");
-  const filterStatusEl = document.getElementById("filterStatus");
-  const sortByEl = document.getElementById("sortBy");
-  const viewModeEl = document.getElementById("viewMode");
+    for(const item of state.items){
+      if(item.status === "done") continue;
+      const due = parseDue(item);
+      if(!due) continue;
 
-  const formEl = document.getElementById("form");
-  const typeEl = document.getElementById("type");
-  const statusEl = document.getElementById("status");
-  const titleEl = document.getElementById("title");
-  const dueDateEl = document.getElementById("dueDate");
-  const dueTimeEl = document.getElementById("dueTime");
-  const whoEl = document.getElementById("who");
-  const priorityEl = document.getElementById("priority");
-  const notesEl = document.getElementById("notes");
-  const recurrenceEl = document.getElementById("recurrence");
-  const remindMinsEl = document.getElementById("remindMins");
-  const submitBtn = document.getElementById("submitBtn");
+      const mins = Number(item.reminderMins || 0);
+      if(!mins) continue;
 
-  const exportBtn = document.getElementById("exportBtn");
-  const importBtn = document.getElementById("importBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const notifBtn = document.getElementById("notifBtn");
-  const gcalBtn = document.getElementById("gcalBtn");
+      // For recurring: schedule for each occurrence in next 7 days
+      const wk = startOfWeek(new Date());
+      for(let i=0;i<7;i++){
+        const d = addDays(wk,i);
+        if(!occursOnDate(item, d)) continue;
 
-  const settingsBtn = document.getElementById("settingsBtn");
-  const settingsPanel = document.getElementById("settingsPanel");
-  const gcalClientIdEl = document.getElementById("gcalClientId");
-  const saveSettingsBtn = document.getElementById("saveSettingsBtn");
-  const originLabel = document.getElementById("originLabel");
-  originLabel.textContent = location.origin;
+        // compute occurrence datetime same time as due
+        const occDT = new Date(d);
+        occDT.setHours(due.getHours(), due.getMinutes(), 0, 0);
 
-  // ========= Rendering =========
-  function renderTabs(){
-    tabsEl.innerHTML="";
-    TYPES.forEach(t=>{
-      const b=document.createElement("button");
-      b.className="tab"+(state.activeTab===t.key?" active":"");
-      b.textContent=t.label;
-      b.onclick=()=>{ state.activeTab=t.key; save(); render(); };
-      tabsEl.appendChild(b);
+        const fireAt = occDT.getTime() - mins*60000;
+        if(fireAt <= nowMs) continue;
+        const delay = fireAt - nowMs;
+
+        const label = `${itemTitle(item)} (${typeLabel(item.type)})`;
+        const t = setTimeout(()=>{
+          notify(`Reminder: ${label}`, { body: itemShort(item) });
+        }, delay);
+
+        reminderTimers.push(t);
+      }
+    }
+  }
+
+  async function enableReminders(){
+    if(!("Notification" in window)){
+      alert("This browser doesn't support notifications.");
+      return;
+    }
+    const perm = await Notification.requestPermission();
+    if(perm !== "granted"){
+      alert("Notifications not enabled.");
+      remindersEnabled = false;
+      render();
+      return;
+    }
+    remindersEnabled = true;
+    toast("Reminders enabled");
+    scheduleReminders();
+    render();
+  }
+
+  function notify(title, opts){
+    try{
+      new Notification(title, opts);
+    }catch{
+      // fallback
+      alert(title + (opts?.body ? "\n\n" + opts.body : ""));
+    }
+  }
+
+  // =========================
+  // Google Calendar (GIS token client)
+  // =========================
+  const GOOGLE_SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+  let tokenClient = null;
+  let gcalAccessToken = null;
+  let gcalCalendars = [];          // {id, summary, primary, backgroundColor}
+  let gcalSelectedIds = new Set();
+  let gcalEventsThisWeek = [];     // normalized events
+
+  function originText(){
+    return `Current origin: ${location.origin}`;
+  }
+
+  function loadClientId(){
+    return localStorage.getItem(CLIENT_KEY) || "";
+  }
+
+  function saveClientId(val){
+    localStorage.setItem(CLIENT_KEY, (val||"").trim());
+  }
+
+  function isConnected(){
+    return !!gcalAccessToken;
+  }
+
+  function ensureTokenClient(){
+    const cid = loadClientId();
+    if(!cid){
+      alert("Add your Google OAuth Client ID in Settings first.");
+      return false;
+    }
+    if(!window.google || !google.accounts || !google.accounts.oauth2){
+      alert("Google script not loaded yet. Refresh and try again.");
+      return false;
+    }
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: cid,
+      scope: GOOGLE_SCOPES,
+      prompt: "consent",
+      callback: async (resp) => {
+        if(resp.error){
+          console.error(resp);
+          alert("Google auth error: " + resp.error);
+          return;
+        }
+        gcalAccessToken = resp.access_token;
+        state.gcal = { connected:true, at: Date.now() };
+        saveState();
+        toast("Google Calendar connected");
+        await listCalendarsAndRenderPicker();
+        await refreshGoogleCalendarForCurrentWeek(true);
+        render();
+      }
     });
-  }
-
-  function computeKPIs(){
-    const open = state.items.filter(x=>!["done","canceled"].includes(x.status)).length;
-    const overdue = state.items.filter(x=>{
-      if (["done","canceled"].includes(x.status)) return false;
-      if (!x.dueISO) return false;
-      return new Date(x.dueISO).getTime() < Date.now();
-    }).length;
-    const dueSoon = state.items.filter(x=>{
-      if (["done","canceled"].includes(x.status)) return false;
-      if (!x.dueISO) return false;
-      const diffHrs = (new Date(x.dueISO).getTime() - Date.now())/36e5;
-      return diffHrs>=0 && diffHrs<=48;
-    }).length;
-    const networkingNext = state.items.filter(x=>x.type==="networking" && !["done","canceled"].includes(x.status)).length;
-
-    // week count (occurrences)
-    const wk = startOfWeek(new Date());
-    let weekOcc = 0;
-    for (let i=0;i<7;i++){
-      const d = addDays(wk,i);
-      weekOcc += state.items.filter(it=>it.dueISO && occursOn(it,d) && !["canceled"].includes(it.status)).length;
-    }
-
-    return { open, dueSoon, overdue, networkingNext, weekOcc };
-  }
-
-  function renderKPIs(){
-    const k=computeKPIs();
-    kpisEl.innerHTML=`
-      <div class="kpiBox"><div class="small">Open items</div><div class="kpiNum">${k.open}</div></div>
-      <div class="kpiBox"><div class="small">Due in 48h</div><div class="kpiNum">${k.dueSoon}</div></div>
-      <div class="kpiBox"><div class="small">Overdue</div><div class="kpiNum">${k.overdue}</div></div>
-      <div class="kpiBox"><div class="small">Networking to do</div><div class="kpiNum">${k.networkingNext}</div></div>
-      <div class="kpiBox"><div class="small">This week (occurrences)</div><div class="kpiNum">${k.weekOcc}</div></div>
-    `;
-  }
-
-  function matchesFilters(item){
-    const q=(searchEl.value||"").trim().toLowerCase();
-    const typeFilter=filterTypeEl.value;
-    const statusFilter=filterStatusEl.value;
-    const tab=state.activeTab;
-
-    if (tab!=="all" && item.type!==tab) return false;
-    if (typeFilter!=="all" && item.type!==typeFilter) return false;
-    if (statusFilter!=="all" && item.status!==statusFilter) return false;
-
-    if (q){
-      const blob=`${item.title} ${item.who||""} ${item.notes||""}`.toLowerCase();
-      if (!blob.includes(q)) return false;
-    }
     return true;
   }
 
-  function sortItems(items){
-    const s=sortByEl.value;
-    const pr=(x)=>parseInt(x.priority||"2",10);
-    const due=(x)=>x.dueISO ? new Date(x.dueISO).getTime() : Infinity;
-
-    if (s==="createdAsc") items.sort((a,b)=>a.createdAt-b.createdAt);
-    if (s==="createdDesc") items.sort((a,b)=>b.createdAt-a.createdAt);
-    if (s==="dueAsc") items.sort((a,b)=>due(a)-due(b));
-    if (s==="dueDesc") items.sort((a,b)=>due(b)-due(a));
-    if (s==="priorityDesc") items.sort((a,b)=>pr(b)-pr(a));
-
-    // tie-breakers
-    items.sort((a,b)=> (pr(b)-pr(a)) || (due(a)-due(b)) || (b.createdAt-a.createdAt));
-    return items;
+  function gcalHeaders(){
+    return { Authorization: `Bearer ${gcalAccessToken}` };
   }
 
-  function renderList(){
-    const items = sortItems(state.items.filter(matchesFilters));
-    listEl.innerHTML="";
+  async function gcalFetchJson(url){
+    const res = await fetch(url, { headers: gcalHeaders() });
+    const text = await res.text();
+    let data;
+    try{ data = JSON.parse(text); }catch{ data = { raw:text }; }
+    if(!res.ok){
+      const msg = data?.error?.message || `Google API error ${res.status}`;
+      throw new Error(msg);
+    }
+    return data;
+  }
 
-    if (!items.length){
-      const empty=document.createElement("div");
-      empty.className="small";
-      empty.textContent="No items (or filters hid them). Add one on the left.";
-      listEl.appendChild(empty);
-      return;
+  async function listCalendarsAndRenderPicker(){
+    if(!isConnected()) return;
+    const data = await gcalFetchJson("https://www.googleapis.com/calendar/v3/users/me/calendarList?minAccessRole=reader&showHidden=false");
+    gcalCalendars = (data.items || []).map(c => ({
+      id: c.id,
+      summary: c.summary,
+      primary: !!c.primary,
+      backgroundColor: c.backgroundColor || "#64748b"
+    }));
+
+    // restore selection
+    const saved = localStorage.getItem(GCAL_SEL_KEY);
+    if(saved){
+      try{
+        const ids = JSON.parse(saved);
+        gcalSelectedIds = new Set((ids||[]).filter(Boolean));
+      }catch{}
+    }
+    // default: all calendars
+    if(gcalSelectedIds.size === 0){
+      gcalCalendars.forEach(c => gcalSelectedIds.add(c.id));
     }
 
-    items.forEach(item=>{
-      const el=document.createElement("div");
-      el.className="item";
-      const pillClass=statusPillClass(item.status,item.dueISO);
-
-      el.innerHTML=`
-        <div class="itemTop">
-          <div>
-            <div class="title">${escapeHtml(item.title)}</div>
-            <div class="meta">
-              <span class="pill">${escapeHtml(typeLabel(item.type))}</span>
-              <span class="${pillClass}">${escapeHtml(STATUS_LABELS[item.status]||item.status)}</span>
-              ${item.who ? `<span class="pill">👤 ${escapeHtml(item.who)}</span>` : ""}
-              <span class="pill">⏰ ${escapeHtml(prettyDue(item.dueISO))}</span>
-              <span class="pill">⭐ ${item.priority==="3"?"High":item.priority==="1"?"Low":"Medium"}</span>
-              ${item.recurrence && item.recurrence!=="none" ? `<span class="pill">🔁 ${escapeHtml(item.recurrence)}</span>` : ""}
-              ${item.remindMins && item.remindMins!=="0" ? `<span class="pill">🔔 ${escapeHtml(item.remindMins)}m</span>` : ""}
-            </div>
-          </div>
-          <div class="rightBtns">
-            <button class="ghost" title="Toggle done">✓</button>
-            <button class="danger" title="Delete">✕</button>
-          </div>
-        </div>
-        ${item.notes ? `<div class="small" style="margin-top:8px;white-space:pre-wrap">${escapeHtml(item.notes)}</div>` : ""}
-      `;
-
-      const [toggleBtn, deleteBtn] = el.querySelectorAll("button");
-      toggleBtn.onclick=(e)=>{
-        e.stopPropagation();
-        item.status = (item.status==="done") ? "todo" : "done";
-        save(); render();
-      };
-      deleteBtn.onclick=(e)=>{
-        e.stopPropagation();
-        state.items = state.items.filter(x=>x.id!==item.id);
-        save(); render();
-      };
-      el.onclick=()=>openEdit(item.id);
-
-      listEl.appendChild(el);
-    });
+    renderCalendarPicker();
   }
 
-  function renderWeek(){
-    const mode=viewModeEl.value;
-    if (mode==="list"){ weekWrap.style.display="none"; return; }
-    weekWrap.style.display="block";
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
 
-    const wkStart = startOfWeek(new Date());
-    const days = Array.from({length:7}, (_,i)=>addDays(wkStart,i));
-    const dayNames = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  function renderCalendarPicker(statusText){
+    const box = el.gcalPicker;
+    if(!box) return;
+    if(!isConnected()){
+      box.style.display = "none";
+      return;
+    }
+    box.style.display = "block";
 
-    // collect occurrences (items) + google events (if any)
-    const occByDay = new Map();
-    days.forEach(d=>occByDay.set(ymd(d), []));
+    const rows = gcalCalendars
+      .sort((a,b) => (b.primary - a.primary) || a.summary.localeCompare(b.summary))
+      .map(c => {
+        const checked = gcalSelectedIds.has(c.id) ? "checked" : "";
+        const label = c.primary ? `${c.summary} (primary)` : c.summary;
+        return `
+          <label style="display:flex;gap:10px;align-items:center;padding:6px 0;">
+            <input type="checkbox" data-calid="${esc(c.id)}" ${checked}/>
+            <span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:${c.backgroundColor};"></span>
+            <span style="font-weight:800;color:#0f172a">${esc(label)}</span>
+          </label>
+        `;
+      }).join("");
 
-    // items as occurrences
-    state.items.forEach(item=>{
-      if (!item.dueISO) return;
-      days.forEach(d=>{
-        if (!occursOn(item,d)) return;
-        // Skip canceled items
-        if (item.status==="canceled") return;
-
-        // occurrence status overrides for recurring items
-        const occStatus = (item.recurrence && item.recurrence!=="none")
-          ? getOccurrenceStatus(item,d)
-          : item.status;
-
-        // apply filters to base item (type/status) using effective status when recurring
-        const shadow = { ...item, status: occStatus };
-        if (!matchesFilters(shadow)) return;
-
-        occByDay.get(ymd(d)).push({ kind:"item", item, date:d, status: occStatus });
-      });
-    });
-
-    // google calendar events (read-only display)
-    const gEvents = (state.gcal?.events || []).filter(ev => ev.startISO && ev.endISO);
-    gEvents.forEach(ev=>{
-      const sd=new Date(ev.startISO);
-      const dKey=ymd(sd);
-      if (!occByDay.has(dKey)) return;
-      // filter by search text (optional)
-      const q=(searchEl.value||"").trim().toLowerCase();
-      if (q && !(ev.summary||"").toLowerCase().includes(q)) return;
-      occByDay.get(dKey).push({ kind:"gcal", ev, date: sd });
-    });
-
-    // sort day entries by time
-    occByDay.forEach((arr, k)=>{
-      arr.sort((a,b)=>{
-        const ta = a.kind==="item" ? (a.item.dueISO ? new Date(a.item.dueISO).getTime() : Infinity) : new Date(a.ev.startISO).getTime();
-        const tb = b.kind==="item" ? (b.item.dueISO ? new Date(b.item.dueISO).getTime() : Infinity) : new Date(b.ev.startISO).getTime();
-        return ta - tb;
-      });
-    });
-
-    weekWrap.innerHTML = `
-      <div class="calendar">
-        <div class="calHead">
-          <div>
-            <div style="font-weight:900">Week view</div>
-            <div class="small">${wkStart.toLocaleDateString([], {month:"short", day:"numeric"})} – ${addDays(wkStart,6).toLocaleDateString([], {month:"short", day:"numeric"})}</div>
-          </div>
-          <div class="row">
-            <button class="ghost" id="prevWeekBtn">←</button>
-            <button class="ghost" id="todayWeekBtn">Today</button>
-            <button class="ghost" id="nextWeekBtn">→</button>
+    box.innerHTML = `
+      <div style="padding:12px;border:1px solid var(--border);border-radius:14px;background:#fff">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="font-weight:900">Calendars to include</div>
+          <div style="display:flex;gap:8px">
+            <button id="gAll" type="button">All</button>
+            <button id="gNone" type="button">None</button>
+            <button id="gApply" type="button" class="primary">Apply</button>
           </div>
         </div>
-        <div class="calGrid" id="calGrid"></div>
+        <div style="margin-top:8px;max-height:220px;overflow:auto">
+          ${rows || `<div class="muted">No calendars found.</div>`}
+        </div>
+        <div class="tiny" id="gcalStatus">${esc(statusText || "")}</div>
       </div>
     `;
 
-    const calGrid = document.getElementById("calGrid");
-    days.forEach((d,i)=>{
-      const key=ymd(d);
-      const isToday = key === ymd(new Date());
-      const col = document.createElement("div");
-      col.className="day";
-      col.innerHTML = `
-        <div class="dayHdr">
-          <span>${dayNames[i]}</span>
-          <span style="${isToday?'font-weight:900;color:#111827':''}">${d.toLocaleDateString([], {month:"short", day:"numeric"})}</span>
-        </div>
-        <div id="day-${key}"></div>
-      `;
-      calGrid.appendChild(col);
-
-      const host = col.querySelector(`#day-${key}`);
-      const entries = occByDay.get(key) || [];
-      entries.forEach(entry=>{
-        if (entry.kind==="item"){
-          const item = entry.item;
-          const time = item.dueISO ? new Date(item.dueISO).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}) : "";
-          const chip = document.createElement("div");
-          chip.className = `chip ${item.type}`;
-          const badge = (entry.status==="done") ? "✅" : (entry.status==="in_progress" ? "🟦" : (entry.status==="waiting" ? "🟨" : "⬜️"));
-          chip.innerHTML = `
-            <div class="c1">${badge} ${escapeHtml(item.title)}</div>
-            <div class="c2">${escapeHtml(time)} ${item.who?("• "+escapeHtml(item.who)):""} ${item.recurrence && item.recurrence!=="none" ? "• 🔁" : ""}</div>
-          `;
-          chip.onclick = ()=>{
-            if (item.recurrence && item.recurrence!=="none"){
-              // toggle this occurrence only
-              const curr = getOccurrenceStatus(item, d);
-              const next = (curr==="done") ? "todo" : "done";
-              setOccurrenceStatus(item, d, next);
-              render();
-            } else {
-              openEdit(item.id);
-            }
-          };
-          host.appendChild(chip);
-        } else {
-          const ev = entry.ev;
-          const sd = new Date(ev.startISO);
-          const ed = new Date(ev.endISO);
-          const time = `${sd.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}–${ed.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
-          const chip = document.createElement("div");
-          chip.className = "chip gcal";
-          chip.innerHTML = `
-            <div class="c1">📅 ${escapeHtml(ev.summary || "(No title)")}</div>
-            <div class="c2">${escapeHtml(time)} ${ev.location?("• "+escapeHtml(ev.location)):""}</div>
-          `;
-          host.appendChild(chip);
-        }
+    box.querySelectorAll('input[type="checkbox"][data-calid]').forEach(cb=>{
+      cb.addEventListener("change", ()=>{
+        const id = cb.getAttribute("data-calid");
+        if(cb.checked) gcalSelectedIds.add(id);
+        else gcalSelectedIds.delete(id);
+        localStorage.setItem(GCAL_SEL_KEY, JSON.stringify([...gcalSelectedIds]));
       });
     });
 
-    document.getElementById("prevWeekBtn").onclick = ()=>{ weekAnchor = addDays(weekAnchor, -7); render(); };
-    document.getElementById("nextWeekBtn").onclick = ()=>{ weekAnchor = addDays(weekAnchor, 7); render(); };
-    document.getElementById("todayWeekBtn").onclick = ()=>{ weekAnchor = new Date(); render(); };
-  }
-
-  // week anchor lets you move weeks
-  let weekAnchor = new Date();
-
-  function render(){
-    renderTabs();
-    renderKPIs();
-
-    // week view uses anchor
-    const wk = startOfWeek(weekAnchor);
-    // Temporarily shift "today" in renderWeek by overriding startOfWeek call:
-    const realStartOfWeek = startOfWeek;
-    startOfWeek = (d)=> realStartOfWeek(weekAnchor); // hacky but simple for single-file
-    renderWeek();
-    startOfWeek = realStartOfWeek;
-
-    const mode=viewModeEl.value;
-    if (mode==="week"){
-      listEl.style.display="none";
-    } else {
-      listEl.style.display="flex";
-      renderList();
-    }
-
-    scheduleReminders();
-    updateNotifBtnLabel();
-    updateGcalBtnLabel();
-  }
-
-  // ========= Edit =========
-  function openEdit(id){
-    const item = state.items.find(x=>x.id===id);
-    if(!item) return;
-
-    typeEl.value=item.type;
-    statusEl.value=item.status;
-    titleEl.value=item.title;
-    whoEl.value=item.who||"";
-    priorityEl.value=item.priority||"2";
-    notesEl.value=item.notes||"";
-    recurrenceEl.value=item.recurrence||"none";
-    remindMinsEl.value=String(item.remindMins ?? "0");
-
-    const {dueDate, dueTime} = fromISO(item.dueISO);
-    dueDateEl.value=dueDate;
-    dueTimeEl.value=dueTime;
-
-    formEl.dataset.editing=id;
-    submitBtn.textContent="Save";
-    document.getElementById("formHint").textContent="Editing — click Save to update.";
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
-
-  formEl.addEventListener("submit",(e)=>{
-    e.preventDefault();
-    const payload = {
-      type: typeEl.value,
-      status: statusEl.value,
-      title: titleEl.value.trim(),
-      who: whoEl.value.trim(),
-      priority: priorityEl.value,
-      notes: notesEl.value,
-      dueISO: toISO(dueDateEl.value, dueTimeEl.value),
-      recurrence: recurrenceEl.value,
-      remindMins: parseInt(remindMinsEl.value,10)
+    box.querySelector("#gAll").onclick = ()=>{
+      gcalCalendars.forEach(c=> gcalSelectedIds.add(c.id));
+      localStorage.setItem(GCAL_SEL_KEY, JSON.stringify([...gcalSelectedIds]));
+      renderCalendarPicker(statusText);
     };
-    if(!payload.title) return;
-
-    const editingId=formEl.dataset.editing;
-    if(editingId){
-      const idx=state.items.findIndex(x=>x.id===editingId);
-      if(idx!==-1) state.items[idx] = { ...state.items[idx], ...payload };
-      delete formEl.dataset.editing;
-      submitBtn.textContent="Add";
-      document.getElementById("formHint").textContent="Tip: put links in Notes. Search finds them later.";
-    } else {
-      state.items.unshift({ id: uid(), createdAt: Date.now(), ...payload });
-    }
-
-    save();
-    formEl.reset();
-    typeEl.value="assignment";
-    statusEl.value="todo";
-    priorityEl.value="2";
-    recurrenceEl.value="none";
-    remindMinsEl.value="0";
-
-    render();
-  });
-
-  [searchEl, filterTypeEl, filterStatusEl, sortByEl, viewModeEl].forEach(el=>el.addEventListener("input", render));
-
-  // ========= Export/Import =========
-  exportBtn.onclick=()=>{
-    const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="student-life-os-export.json";
-    a.click();
-  };
-  importBtn.onclick=()=>{
-    const inp=document.createElement("input");
-    inp.type="file"; inp.accept="application/json";
-    inp.onchange=async()=>{
-      const f=inp.files?.[0]; if(!f) return;
-      const txt=await f.text();
-      try{
-        const data=JSON.parse(txt);
-        if(!data || !Array.isArray(data.items)) throw new Error("bad");
-        state = { ...structuredClone(DEFAULT_STATE), ...data };
-        save(); render();
-      }catch{ alert("That file doesn't look like a Student Life OS export."); }
+    box.querySelector("#gNone").onclick = ()=>{
+      gcalSelectedIds.clear();
+      localStorage.setItem(GCAL_SEL_KEY, JSON.stringify([]));
+      renderCalendarPicker(statusText);
     };
-    inp.click();
-  };
-  resetBtn.onclick=()=>{
-    if(!confirm("Reset everything? This clears your local data.")) return;
-    state=structuredClone(DEFAULT_STATE);
-    save(); render();
-  };
-
-  // ========= Notifications / Reminders =========
-  let reminderTimers = [];
-  function clearReminders(){
-    reminderTimers.forEach(t=>clearTimeout(t));
-    reminderTimers=[];
-  }
-
-  function updateNotifBtnLabel(){
-    const p = Notification?.permission;
-    if (!("Notification" in window)) { notifBtn.textContent="Reminders unsupported"; notifBtn.disabled=true; return; }
-    if (p==="granted") notifBtn.textContent="Reminders enabled";
-    else if (p==="denied") notifBtn.textContent="Reminders blocked";
-    else notifBtn.textContent="Enable reminders";
-  }
-
-  notifBtn.onclick=async()=>{
-    if(!("Notification" in window)) return;
-    const p = await Notification.requestPermission();
-    updateNotifBtnLabel();
-    if(p==="granted") scheduleReminders(true);
-  };
-
-  function scheduleReminders(forceNotify=false){
-    clearReminders();
-    if(!("Notification" in window)) return;
-    if(Notification.permission!=="granted") return;
-
-    const now = Date.now();
-    // schedule next 24h reminders
-    const horizon = now + 24*3600*1000;
-
-    const candidates = state.items.filter(it=>{
-      if(!it.dueISO) return false;
-      if(!it.remindMins || it.remindMins<=0) return false;
-      if(["done","canceled"].includes(it.status)) return false;
-      return true;
-    });
-
-    candidates.forEach(it=>{
-      const due = new Date(it.dueISO).getTime();
-      const fire = due - (it.remindMins*60*1000);
-      if(fire < now || fire > horizon) return;
-
-      const t = setTimeout(()=>{
-        try{
-          new Notification("Student Life OS reminder", {
-            body: `${it.title}${it.who ? " — " + it.who : ""}\nDue: ${prettyDue(it.dueISO)}`,
-          });
-        }catch{}
-      }, Math.max(0, fire-now));
-      reminderTimers.push(t);
-    });
-
-    if(forceNotify){
-      try{ new Notification("Reminders enabled", { body: "You’ll get reminders for items with a reminder set (while this page is open)." }); }catch{}
-    }
-  }
-
-  // ========= Settings =========
-  settingsBtn.onclick=()=>{
-    settingsPanel.style.display = (settingsPanel.style.display==="none" ? "block" : "none");
-    gcalClientIdEl.value = state.settings.gcalClientId || "";
-  };
-  saveSettingsBtn.onclick=()=>{
-    state.settings.gcalClientId = (gcalClientIdEl.value||"").trim();
-    save();
-    alert("Saved settings.");
-    updateGcalBtnLabel();
-  };
-
-  // ========= Google Calendar (optional) =========
-  // This is a minimal client-side OAuth flow using Google Identity Services token client.
-  // Requires you to add Google's script and set a Client ID in settings.
-  // Scopes: read-only by default, optionally add event create later.
-  function updateGcalBtnLabel(){
-    const ok = !!(state.settings.gcalClientId);
-    if(!ok) { gcalBtn.textContent="Connect Google Calendar"; return; }
-    const loggedIn = state.gcal.accessToken && state.gcal.expiresAt > Date.now();
-    gcalBtn.textContent = loggedIn ? "Refresh Google Calendar" : "Connect Google Calendar";
-  }
-
-  function ensureGoogleScript(){
-    return new Promise((resolve,reject)=>{
-      if (window.google && window.google.accounts && window.google.accounts.oauth2) return resolve();
-      const s=document.createElement("script");
-      s.src="https://accounts.google.com/gsi/client";
-      s.async=true; s.defer=true;
-      s.onload=()=>resolve();
-      s.onerror=()=>reject(new Error("Failed to load Google script"));
-      document.head.appendChild(s);
-    });
-  }
-
-  async function gcalAuth(){
-    const clientId = (state.settings.gcalClientId||"").trim();
-    if(!clientId){
-      settingsPanel.style.display="block";
-      alert("Add your Google OAuth Client ID in Settings first.");
-      return;
-    }
-    await ensureGoogleScript();
-
-    return new Promise((resolve,reject)=>{
-      const tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: "https://www.googleapis.com/auth/calendar.readonly",
-        callback: (resp) => {
-          if (resp && resp.access_token){
-            state.gcal.accessToken = resp.access_token;
-            state.gcal.expiresAt = Date.now() + (resp.expires_in*1000) - 30_000;
-            save();
-            resolve(resp.access_token);
-          } else {
-            reject(new Error("No token"));
-          }
-        }
-      });
-      tokenClient.requestAccessToken({ prompt: "" });
-    });
-  }
-
-  async function fetchGcalEventsThisWeek(){
-    if(!(state.gcal.accessToken && state.gcal.expiresAt > Date.now())) return;
-    const wkStart = startOfWeek(new Date());
-    const timeMin = new Date(wkStart); timeMin.setHours(0,0,0,0);
-    const timeMax = addDays(wkStart,7); timeMax.setHours(0,0,0,0);
-
-    const url = new URL("https://www.googleapis.com/calendar/v3/calendars/primary/events");
-    url.searchParams.set("timeMin", timeMin.toISOString());
-    url.searchParams.set("timeMax", timeMax.toISOString());
-    url.searchParams.set("singleEvents", "true");
-    url.searchParams.set("orderBy", "startTime");
-    url.searchParams.set("maxResults", "100");
-
-    const res = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${state.gcal.accessToken}` }
-    });
-    if(!res.ok){
-      // token expired / revoked
-      state.gcal.events = [];
-      save();
-      return;
-    }
-    const data = await res.json();
-    const events = (data.items||[]).map(ev=>{
-      const startISO = ev.start?.dateTime || (ev.start?.date ? (ev.start.date+"T00:00:00.000Z") : "");
-      const endISO = ev.end?.dateTime || (ev.end?.date ? (ev.end.date+"T00:00:00.000Z") : "");
-      return {
-        id: ev.id,
-        summary: ev.summary || "",
-        location: ev.location || "",
-        startISO,
-        endISO
-      };
-    }).filter(e=>e.startISO && e.endISO);
-
-    state.gcal.events = events;
-    save();
-  }
-
-  gcalBtn.onclick=async()=>{
-    try{
-      await gcalAuth();
-      await fetchGcalEventsThisWeek();
-      updateGcalBtnLabel();
+    box.querySelector("#gApply").onclick = async ()=>{
+      await refreshGoogleCalendarForCurrentWeek(true);
       render();
-    }catch(e){
-      alert("Google Calendar connection failed. Check your Client ID + allowed origins/redirects in Google Cloud.");
-    }
-  };
-
-  // ========= Seed =========
-  if(state.items.length===0){
-    const tomorrow = new Date(Date.now()+86400000);
-    state.items = [
-      { id:uid(), createdAt:Date.now()-1000000, type:"assignment", status:"todo", title:"Write POLI paper outline", who:"Professor Kim", priority:"3", notes:"Thesis + 3 sources. Draft intro paragraph.", dueISO: toISO(ymd(tomorrow), "18:00"), recurrence:"none", remindMins:60 },
-      { id:uid(), createdAt:Date.now()-900000, type:"networking", status:"todo", title:"Follow up: coffee chat", who:"Maya (Goldman)", priority:"2", notes:"Send thank-you + ask for 1 referral intro.", dueISO: "", recurrence:"none", remindMins:0 },
-      { id:uid(), createdAt:Date.now()-800000, type:"job", status:"in_progress", title:"Apply: Summer Analyst", who:"JPMorgan", priority:"3", notes:"Resume + cover letter. Put portal link here.", dueISO: "", recurrence:"none", remindMins:0 },
-      { id:uid(), createdAt:Date.now()-700000, type:"meeting", status:"todo", title:"Weekly planning", who:"(you)", priority:"2", notes:"Plan week: classes, tasks, apps, socials.", dueISO: toISO(ymd(new Date()), "09:00"), recurrence:"weekly", remindMins:15 }
-    ];
-    save();
+    };
   }
 
-  // ========= Initial sync =========
-  (async ()=>{
-    updateNotifBtnLabel();
-    updateGcalBtnLabel();
-    gcalClientIdEl.value = state.settings.gcalClientId || "";
-    // if token still valid, refresh events
-    if (state.gcal.accessToken && state.gcal.expiresAt > Date.now()){
-      await fetchGcalEventsThisWeek();
+  async function fetchEventsForWeek(weekStartISO, weekEndISO){
+    const ids = [...gcalSelectedIds];
+    if(ids.length === 0) return [];
+
+    const results = await Promise.allSettled(ids.map(async (calId)=>{
+      const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events`);
+      url.searchParams.set("timeMin", weekStartISO);
+      url.searchParams.set("timeMax", weekEndISO);
+      url.searchParams.set("singleEvents", "true");
+      url.searchParams.set("orderBy", "startTime");
+      url.searchParams.set("maxResults", "2500");
+      const data = await gcalFetchJson(url.toString());
+      const cal = gcalCalendars.find(c=>c.id===calId);
+      return (data.items || [])
+        .filter(e => e.status !== "cancelled")
+        .map(e => ({
+          source:"gcal",
+          id:`gcal:${calId}:${e.id}`,
+          calId,
+          calName: cal?.summary || "Google Calendar",
+          calColor: cal?.backgroundColor || "#64748b",
+          title: e.summary || "(no title)",
+          start: e.start?.dateTime || e.start?.date,
+          end: e.end?.dateTime || e.end?.date,
+          htmlLink: e.htmlLink || ""
+        }));
+    }));
+
+    let ok=0, err=0;
+    const all=[];
+    for(const r of results){
+      if(r.status==="fulfilled"){ ok++; all.push(...r.value); }
+      else { err++; console.warn("GCAL fetch failed:", r.reason); }
     }
+    const seen = new Set();
+    const dedup = all.filter(e => seen.has(e.id) ? false : (seen.add(e.id), true));
+    renderCalendarPicker(`Fetched ${dedup.length} events from ${ok} calendars${err?` (${err} failed)`:``}.`);
+    return dedup;
+  }
+
+  async function refreshGoogleCalendarForCurrentWeek(silent=false){
+    if(!isConnected()) return;
+    const wk = startOfWeek(weekCursor);
+    const wkEnd = addDays(wk, 7);
+
+    // ISO for Calendar API (needs full date-time with timezone)
+    const timeMin = new Date(wk); timeMin.setHours(0,0,0,0);
+    const timeMax = new Date(wkEnd); timeMax.setHours(0,0,0,0);
+
+    try{
+      gcalEventsThisWeek = await fetchEventsForWeek(timeMin.toISOString(), timeMax.toISOString());
+      if(!silent) toast("Calendar refreshed");
+    }catch(err){
+      console.error(err);
+      alert("Google Calendar error: " + err.message);
+    }
+  }
+
+  function disconnectGoogle(){
+    gcalAccessToken = null;
+    gcalCalendars = [];
+    gcalSelectedIds = new Set();
+    gcalEventsThisWeek = [];
+    state.gcal = { connected:false };
+    saveState();
+    el.refreshGcalBtn.style.display = "none";
+    el.gcalBtn.style.display = "inline-block";
+    renderCalendarPicker("");
     render();
-  })();
-</script>
-</body>
-</html>
+  }
+
+  // =========================
+  // UI Options
+  // =========================
+  function typeLabel(type){
+    return (TYPES.find(t=>t.id===type)?.label) || type;
+  }
+
+  function itemTitle(item){
+    return item.title?.trim() || "(untitled)";
+  }
+
+  function itemShort(item){
+    const bits=[];
+    if(item.who) bits.push(item.who);
+    if(item.notes) bits.push(item.notes.slice(0,160));
+    return bits.join(" • ");
+  }
+
+  // =========================
+  // Rendering
+  // =========================
+  function buildSelect(selectEl, options, selected){
+    selectEl.innerHTML = options.map(o => `<option value="${o.id}" ${o.id===selected?'selected':''}>${o.label}</option>`).join("");
+  }
+
+  function setForm(item){
+    el.type.value = item?.type || "assignment";
+    el.status.value = item?.status || "todo";
+    el.title.value = item?.title || "";
+    el.date.value = item?.dueDate || "";
+    el.time.value = item?.dueTime || "";
+    el.who.value = item?.who || "";
+    el.priority.value = item?.priority || "2";
+    el.notes.value = item?.notes || "";
+    el.reminder.value = String(item?.reminderMins || 0);
+    el.recurring.value = item?.recurring || "none";
+    el.recurringUntil.value = item?.recurringUntil || "";
+    el.saveBtn.textContent = editingId ? "Save" : "Add";
+  }
+
+  function clearForm(){
+    editingId = null;
+    setForm(null);
+  }
+
+  function matchesFilters(item){
+    const q = el.search.value.trim().toLowerCase();
+    const cat = el.catFilter.value;
+    const st = el.statusFilter.value;
+    const tab = state.activeTab || "all";
+
+    if(tab !== "all" && item.type !== tab) return false;
+    if(cat !== "all" && item.type !== cat) return false;
+    if(st !== "all" && item.status !== st) return false;
+
+    if(!q) return true;
+    const hay = [
+      item.title, item.notes, item.who, item.type, item.status
+    ].filter(Boolean).join(" ").toLowerCase();
+    return hay.includes(q);
+  }
+
+  function sortItems(items){
+    const mode = el.sortBy.value;
+    const copy = items.slice();
+
+    if(mode === "alpha"){
+      copy.sort((a,b)=> itemTitle(a).localeCompare(itemTitle(b)));
+      return copy;
+    }
+    if(mode === "createdNew"){
+      copy.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
+      return copy;
+    }
+    if(mode === "priorityHigh"){
+      copy.sort((a,b)=> (Number(b.priority||2) - Number(a.priority||2)) || ((parseDue(a)?.getTime()||1e18) - (parseDue(b)?.getTime()||1e18)));
+      return copy;
+    }
+    // dueSoon default
+    copy.sort((a,b)=> (parseDue(a)?.getTime()||1e18) - (parseDue(b)?.getTime()||1e18));
+    return copy;
+  }
+
+  function renderTabs(){
+    el.tabs.innerHTML = TYPES.map(t=>{
+      const active = (state.activeTab||"all") === t.id ? "active" : "";
+      return `<button class="tab ${active}" data-tab="${t.id}">${t.label}</button>`;
+    }).join("");
+    el.tabs.querySelectorAll("[data-tab]").forEach(btn=>{
+      btn.onclick = ()=>{
+        state.activeTab = btn.getAttribute("data-tab");
+        saveState();
+        render();
+      };
+    });
+  }
+
+  function renderKPIs(){
+    const items = state.items;
+    const open = items.filter(i=> i.status !== "done").length;
+
+    const tNow = new Date();
+    const soonMs = tNow.getTime() + 48*3600*1000;
+
+    let dueSoon = 0, overdue = 0, net = 0;
+    for(const i of items){
+      if(i.status === "done") continue;
+      if(i.type === "networking") net++;
+      const d = parseDue(i);
+      if(!d) continue;
+      const ms = d.getTime();
+      if(ms < tNow.get
